@@ -107,6 +107,10 @@ chrome.runtime.onMessage.addListener((message) => {
 let sessionCompanyNames = new Set();
 let sessionPageCount = 0;
 
+// Cache last render payload so doFlip() can repopulate the back face on demand
+let lastTrackerScripts = [];
+let lastCookieData = {};
+
 // ── Streak bar ────────────────────────────────────────────────
 function updateStreakBar(count) {
   const label = document.getElementById("streak-label");
@@ -160,6 +164,10 @@ function render(payload) {
 
   renderGauge(score, companies, isHttps, pageMixedCount);
   renderCompanyList(companies);
+
+  // Cache so doFlip() can repopulate the back face at any time
+  lastTrackerScripts = pageTrackerScripts;
+  lastCookieData     = cookieData;
   renderBackFace(pageTrackerScripts, cookieData);
 
   setText("stat-companies",       companies.length);
@@ -234,16 +242,15 @@ function renderCompanyList(companies) {
   if (companies.length === 0) {
     list.innerHTML = `
       <div class="empty-state">
-        <img src="../assets/graphics/notrackers.svg" alt="No trackers" />
+        <img src="../assets/graphics/noTrackers.svg" alt="No trackers" />
         <div class="empty-title">No trackers detected</div>
         <div class="empty-sub">This page looks clean</div>
       </div>`;
-    if (typeof window._syncFlipHeight === "function") requestAnimationFrame(window._syncFlipHeight);
     return;
   }
 
   list.innerHTML = companies.map(c => {
-    const initials   = c.name.split(" ").map(w => w[0]).join("").slice(0, 2).toUpperCase();
+    const initials = c.name.split(/[\s\/]+/).filter(w => /^[a-zA-Z]/.test(w)).map(w => w[0]).join("").slice(0, 2).toUpperCase();
     const tierLabel  = TIER_LABELS[c.tier] || "Tracker";
     const avatarClass = c.tier === 1 ? "t1" : c.tier === 2 ? "t2" : "t3";
     const badgeClass  = `t${c.tier}-badge`;
@@ -257,7 +264,6 @@ function renderCompanyList(companies) {
         <span class="tier-badge ${badgeClass}">${tierLabel}</span>
       </div>`;
   }).join("");
-  if (typeof window._syncFlipHeight === "function") requestAnimationFrame(window._syncFlipHeight);
 }
 
 function setText(id, val) {
@@ -276,7 +282,7 @@ function renderBackFace(trackerScripts, cookieData) {
   let html = "";
 
   if (cookieTrackers.length > 0) {
-    html += `<div class="detail-name" style="font-size:10px;font-weight:900;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px;">🍪 Tracking Cookies</div>`;
+    html += `<div class="detail-sublabel">🍪 Tracking Cookies</div>`;
     html += cookieTrackers.map(t => {
       const cookie  = t.cookie || t;
       const reasons = t.reasons || [];
@@ -290,7 +296,7 @@ function renderBackFace(trackerScripts, cookieData) {
   }
 
   if (scripts.length > 0) {
-    html += `<div class="detail-name" style="font-size:10px;font-weight:900;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin:${cookieTrackers.length ? "10px" : "0"} 0 4px;">🔍 Tracker Scripts</div>`;
+    html += `<div class="detail-sublabel">🔍 Tracker Scripts</div>`;
     html += scripts.map(t => {
       const domain = t.tracker || t.domain || "";
       const url    = t.url || "";
@@ -307,9 +313,35 @@ function renderBackFace(trackerScripts, cookieData) {
   }
 
   list.innerHTML = html;
-
-  // Sync card height after DOM update
-  if (typeof window._syncFlipHeight === "function") {
-    requestAnimationFrame(window._syncFlipHeight);
-  }
 }
+
+// ── Page nav buttons ──────────────────────────────────────────
+document.getElementById("dashboard-btn")?.addEventListener("click", () => {
+  chrome.tabs.create({ url: chrome.runtime.getURL("pages/dashboard/dashboard.html") });
+});
+document.getElementById("settings-btn2")?.addEventListener("click", () => {
+  chrome.tabs.create({ url: chrome.runtime.getURL("pages/settings/settings.html") });
+});
+
+// ── Flip toggle ───────────────────────────────────────────────
+let isFlipped = false;
+
+document.getElementById("flip-btn")?.addEventListener("click", () => {
+  const front = document.getElementById("face-front");
+  const back  = document.getElementById("face-back");
+  const label = document.getElementById("flip-label");
+  if (!front || !back || !label) return;
+
+  isFlipped = !isFlipped;
+
+  if (isFlipped) {
+    front.style.display = "none";
+    back.style.display  = "block";
+    label.textContent   = "Cookies & Tracker Scripts";
+    renderBackFace(lastTrackerScripts, lastCookieData);
+  } else {
+    back.style.display  = "none";
+    front.style.display = "block";
+    label.textContent   = "Who's watching you";
+  }
+});
