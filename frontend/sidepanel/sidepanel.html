@@ -3,235 +3,283 @@
 <head>
   <meta charset="UTF-8" />
   <title>ClickSafe</title>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
   <style>
     :root {
-      --navy:         #1E3A8A;
-      --navy-light:   #EEF2FF;
-      --navy-mid:     #3B5FBD;
-      --bg:           #FFFFFF;
-      --bg-soft:      #F8F9FC;
-      --text:         #0A0A0F;
-      --text-muted:   #64748B;
-      --green:        #16A34A;
-      --green-light:  #DCFCE7;
-      --red-1:        #7B0000;
-      --red-1-light:  #FFE0E0;
-      --red-2:        #B91C1C;
-      --red-2-light:  #FECACA;
-      --red-3:        #DC2626;
-      --red-3-light:  #FEE2E2;
-      --border:       #E2E8F0;
-      --radius:       10px;
-      --radius-sm:    7px;
+      --green:       #58CC02;
+      --green-dark:  #46A302;
+      --green-bg:    #D7FFB8;
+      --blue:        #CE82FF;
+      --blue-dark:   #9C44CC;
+      --blue-bg:     #F1D4FF;
+      --purple:      #CE82FF;
+      --purple-dark: #9C44CC;
+      --purple-bg:   #F1D4FF;
+      --red:         #FF4B4B;
+      --red-dark:    #CC2020;
+      --red-bg:      #FFDFE0;
+      --orange:      #FF9600;
+      --orange-bg:   #FFEAA0;
+      --yellow:      #FFC800;
+      --bg:          #F7F7F7;
+      --surface:     #FFFFFF;
+      --text:        #4B4B4B;
+      --text-dark:   #3C3C3C;
+      --muted:       #AFAFAF;
+      --border:      #E5E5E5;
+      --r:           16px;
+      --r-sm:        12px;
+      --r-xs:        8px;
     }
 
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
-      font-family: 'DM Sans', -apple-system, sans-serif;
+      font-family: 'Nunito', sans-serif;
       background: var(--bg);
-      color: var(--text);
+      color: var(--text-dark);
       font-size: 13px;
       height: 100vh;
       overflow-y: auto;
       overflow-x: hidden;
     }
 
-    /* Header */
+    /* HEADER */
     .header {
-      background: var(--bg);
-      border-bottom: 1px solid var(--border);
-      padding: 13px 16px;
+      background: var(--green);
+      padding: 14px 16px;
       display: flex;
       align-items: center;
       justify-content: space-between;
       position: sticky;
       top: 0;
       z-index: 10;
+      border-bottom: 3px solid var(--green-dark);
     }
-    .header-brand { display: flex; align-items: center; gap: 8px; }
-    .brand-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--navy); }
-    .brand-name { font-size: 15px; font-weight: 700; color: var(--text); letter-spacing: -0.4px; }
-    .header-btn {
-      background: var(--bg-soft);
-      border: 1px solid var(--border);
-      color: var(--text-muted);
+    .header-brand { display: flex; align-items: center; gap: 9px; }
+    .brand-icon {
       width: 30px; height: 30px;
-      border-radius: var(--radius-sm);
-      cursor: pointer; font-size: 13px;
+      background: white;
+      border-radius: 10px;
+      border: 2px solid var(--green-dark);
       display: flex; align-items: center; justify-content: center;
-      transition: background 0.15s, color 0.15s, border-color 0.15s;
+      font-size: 16px;
     }
-    .header-btn:hover { background: var(--navy-light); color: var(--navy); border-color: var(--navy); }
+    .brand-name {
+      font-size: 16px; font-weight: 900; color: white;
+      letter-spacing: -0.3px;
+      text-shadow: 0 2px 0 var(--green-dark);
+    }
+    .header-btn {
+      background: white;
+      border: 2px solid var(--green-dark);
+      color: var(--green-dark);
+      width: 32px; height: 32px;
+      border-radius: var(--r-xs);
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 15px;
+      font-weight: 900;
+      transition: transform 0.1s;
+    }
+    .header-btn:active { transform: scale(0.93); }
 
-    /* Score block */
+    /* SCORE BLOCK */
     .score-block {
-      padding: 20px 16px 16px;
-      background: var(--bg);
-      border-bottom: 1px solid var(--border);
+      background: var(--green);
+      padding: 4px 16px 20px;
     }
-    .score-top { display: flex; align-items: center; gap: 16px; margin-bottom: 12px; }
+    .score-inner {
+      background: white;
+      border: 3px solid var(--green-dark);
+      border-radius: var(--r);
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
 
     .ring-wrap { position: relative; width: 72px; height: 72px; flex-shrink: 0; }
     .ring-wrap svg { width: 72px; height: 72px; transform: rotate(-90deg); }
     .ring-bg  { fill: none; stroke: var(--border); stroke-width: 6; }
     .ring-arc {
       fill: none; stroke-width: 6; stroke-linecap: round;
-      transition: stroke-dashoffset 0.8s cubic-bezier(.4,0,.2,1), stroke 0.4s;
+      transition: stroke-dashoffset 0.9s cubic-bezier(.4,0,.2,1), stroke 0.4s;
     }
     .ring-inner {
       position: absolute; inset: 0;
       display: flex; flex-direction: column;
       align-items: center; justify-content: center;
     }
-    .ring-num { font-size: 20px; font-weight: 700; line-height: 1; letter-spacing: -1px; }
-    .ring-sub { font-size: 9px; color: var(--text-muted); margin-top: 1px; font-weight: 500; }
+    .ring-num { font-size: 21px; font-weight: 900; color: var(--text-dark); line-height: 1; }
+    .ring-sub { font-size: 10px; color: var(--muted); font-weight: 700; }
 
     .score-right { flex: 1; min-width: 0; }
-    .score-verdict { font-size: 16px; font-weight: 700; letter-spacing: -0.4px; margin-bottom: 5px; line-height: 1.2; }
-    .score-plain { font-size: 12px; color: var(--text-muted); line-height: 1.55; }
-
-    .page-url { font-size: 11px; color: var(--text-muted); word-break: break-all; line-height: 1.4; margin-bottom: 8px; }
+    .score-verdict { font-size: 15px; font-weight: 900; color: var(--text-dark); margin-bottom: 4px; }
+    .score-plain   { font-size: 11px; color: var(--muted); line-height: 1.5; margin-bottom: 8px; font-weight: 600; }
+    .page-url { font-size: 10px; color: var(--muted); word-break: break-all; line-height: 1.4; margin-bottom: 8px; font-weight: 600; }
 
     .conn-pill {
       display: inline-flex; align-items: center; gap: 5px;
       padding: 4px 10px; border-radius: 999px;
-      font-size: 11px; font-weight: 600;
+      font-size: 10px; font-weight: 800;
     }
-    .conn-pill.secure   { background: var(--green-light); color: #15803d; }
-    .conn-pill.insecure { background: var(--red-light);   color: #dc2626; }
-    .conn-dot { width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
+    .conn-pill.secure   { background: var(--green-bg); color: var(--green-dark); border: 2px solid var(--green-dark); }
+    .conn-pill.insecure { background: var(--red-bg);   color: var(--red-dark);   border: 2px solid var(--red-dark); }
+    .conn-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
 
-    /* Buttons */
+    /* BUTTONS */
     .btn-row {
       display: flex; gap: 8px;
       padding: 12px 16px;
-      background: var(--bg);
-      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+      border-bottom: 2px solid var(--border);
     }
     .btn {
-      flex: 1; padding: 8px 10px;
-      border-radius: var(--radius-sm);
-      font-size: 12px; font-weight: 600;
-      cursor: pointer; border: none;
+      flex: 1; padding: 10px 10px;
+      border-radius: var(--r-sm);
+      font-size: 13px; font-weight: 800;
+      cursor: pointer;
       font-family: inherit;
-      transition: opacity 0.15s, transform 0.1s;
       letter-spacing: -0.2px;
+      transition: transform 0.1s;
     }
-    .btn:active { transform: scale(0.97); }
-    .btn-primary   { background: var(--navy); color: white; }
-    .btn-primary:hover { background: var(--navy-mid); }
-    .btn-secondary { background: var(--bg-soft); color: var(--text); border: 1px solid var(--border); }
-    .btn-secondary:hover { background: var(--navy-light); border-color: var(--navy); color: var(--navy); }
+    .btn:active { transform: scale(0.96); }
+    .btn-primary {
+      background: var(--blue);
+      color: white;
+      border: 2px solid var(--blue-dark);
+      box-shadow: 0 4px 0 var(--blue-dark);
+    }
+    .btn-primary:active { box-shadow: none; transform: translateY(3px); }
+    .btn-secondary {
+      background: white;
+      color: var(--text-dark);
+      border: 2px solid var(--border);
+      box-shadow: 0 4px 0 var(--border);
+    }
+    .btn-secondary:active { box-shadow: none; transform: translateY(3px); }
 
-    .gap { height: 6px; background: var(--bg-soft); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+    /* DIVIDER */
+    .divider { height: 10px; background: var(--bg); }
 
-    /* Section */
-    .section { background: var(--bg); padding: 14px 16px; border-bottom: 1px solid var(--border); }
+    /* SECTION */
+    .section { background: var(--surface); padding: 14px 16px; border-bottom: 2px solid var(--border); }
     .section-label {
-      font-size: 10px; font-weight: 700;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      margin-bottom: 12px;
+      font-size: 11px; font-weight: 900; color: var(--muted);
+      text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 12px;
     }
 
-    /* Company cards */
+    /* COMPANY CARDS */
     .company-card {
-      display: flex; align-items: center; gap: 10px;
-      padding: 10px 11px;
-      background: var(--bg-soft);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      margin-bottom: 7px;
+      display: flex; align-items: center; gap: 11px;
+      padding: 10px 12px;
+      background: var(--bg);
+      border: 2px solid var(--border);
+      border-radius: var(--r-sm);
+      margin-bottom: 8px;
       transition: border-color 0.15s;
     }
     .company-card:last-child { margin-bottom: 0; }
-    .company-card:hover { border-color: #0A0A0F; }
+    .company-card:hover { border-color: var(--blue); }
 
     .company-avatar {
-      width: 32px; height: 32px;
-      border-radius: 8px;
-      background: var(--red-1-light);
+      width: 36px; height: 36px;
+      border-radius: var(--r-xs);
       display: flex; align-items: center; justify-content: center;
-      font-size: 11px; font-weight: 700;
-      color: var(--red-1);
-      flex-shrink: 0;
-      letter-spacing: -0.3px;
+      font-size: 12px; font-weight: 900;
+      flex-shrink: 0; border: 2px solid transparent;
     }
-    .company-avatar.t2 { background: var(--red-2-light); color: var(--red-2); }
-    .company-avatar.t3 { background: var(--red-3-light); color: var(--red-3); }
+    .company-avatar.t1 { background: var(--red-bg);    color: var(--red-dark);    border-color: var(--red-dark); }
+    .company-avatar.t2 { background: var(--orange-bg); color: var(--orange);      border-color: var(--orange); }
+    .company-avatar.t3 { background: var(--yellow);    color: #7a5f00;            border-color: #c49800; }
 
     .company-body { flex: 1; min-width: 0; }
-    .company-name { font-size: 13px; font-weight: 600; color: var(--text); letter-spacing: -0.2px; }
-    .company-what { font-size: 11px; color: var(--text-muted); margin-top: 1px; line-height: 1.4; }
+    .company-name { font-size: 13px; font-weight: 800; color: var(--text-dark); }
+    .company-what { font-size: 11px; color: var(--muted); margin-top: 1px; font-weight: 600; }
 
     .tier-badge {
-      font-size: 10px; font-weight: 700;
-      padding: 3px 8px; border-radius: 999px;
-      flex-shrink: 0; letter-spacing: 0.02em;
+      font-size: 10px; font-weight: 900;
+      padding: 4px 9px; border-radius: 999px;
+      flex-shrink: 0; letter-spacing: 0.03em;
+      border: 2px solid transparent;
     }
-    .t1-badge { background: var(--red-1-light); color: var(--red-1); }
-    .t2-badge { background: var(--red-2-light); color: var(--red-2); }
-    .t3-badge { background: var(--red-3-light); color: var(--red-3); }
+    .t1-badge { background: var(--red-dark);  color: #fff;               border-color: var(--red-dark); }
+    .t2-badge { background: var(--orange-bg); color: var(--orange);      border-color: var(--orange); }
+    .t3-badge { background: var(--yellow);    color: #7a5f00;            border-color: #c49800; }
 
-    /* Empty state */
+    /* EMPTY STATE */
     .empty-state {
       display: flex; flex-direction: column;
       align-items: center;
-      padding: 20px 0 10px;
-      text-align: center;
+      padding: 20px 0 10px; text-align: center;
     }
-    .empty-state img { width: 110px; height: 110px; margin-bottom: 10px; object-fit: contain; }
-    .empty-title { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 3px; }
-    .empty-sub   { font-size: 11px; color: var(--text-muted); }
+    .empty-state img { width: 100px; height: 100px; margin-bottom: 10px; object-fit: contain; }
+    .empty-title { font-size: 13px; font-weight: 900; color: var(--text-dark); margin-bottom: 3px; }
+    .empty-sub   { font-size: 11px; color: var(--muted); font-weight: 600; }
 
-    /* Stat grid */
-    .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; }
+    /* STAT GRID */
+    .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
     .stat-box {
-      background: var(--bg-soft);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 10px 11px;
+      background: var(--bg);
+      border: 2px solid var(--border);
+      border-radius: var(--r-sm);
+      padding: 11px 12px;
     }
-    .stat-label { font-size: 10px; color: var(--text-muted); font-weight: 500; margin-bottom: 4px; }
-    .stat-val   { font-size: 22px; font-weight: 700; letter-spacing: -1px; color: var(--navy); }
+    .stat-label { font-size: 10px; color: var(--muted); font-weight: 800; letter-spacing: 0.03em; text-transform: uppercase; margin-bottom: 4px; }
+    .stat-val   { font-size: 26px; font-weight: 900; letter-spacing: -1px; color: var(--blue); }
 
-    /* Session rows */
+    /* SESSION ROWS */
     .session-row {
       display: flex; justify-content: space-between; align-items: center;
-      padding: 7px 0;
-      border-bottom: 1px solid var(--border);
-      font-size: 12px;
+      padding: 9px 0; border-bottom: 2px solid var(--border); font-size: 12px;
     }
     .session-row:last-child { border-bottom: none; }
-    .session-key { color: var(--text-muted); }
-    .session-val { font-weight: 700; color: var(--text); letter-spacing: -0.3px; }
+    .session-key { color: var(--muted); font-weight: 700; }
+    .session-val { font-weight: 900; color: var(--text-dark); font-size: 14px; }
 
-    /* Footer */
+    /* XP STREAK BAR */
+    .streak-bar {
+      display: flex; gap: 6px; align-items: center;
+      padding: 10px 16px;
+      background: var(--surface);
+      border-bottom: 2px solid var(--border);
+    }
+    .streak-item {
+      flex: 1; height: 8px;
+      border-radius: 999px;
+      background: var(--border);
+    }
+    .streak-item.done { background: var(--green); }
+    .streak-item.active { background: var(--yellow); }
+    .streak-label {
+      font-size: 10px; font-weight: 800; color: var(--muted);
+      white-space: nowrap;
+    }
+
+    /* FOOTER */
     .footer {
       padding: 12px 16px;
       display: flex; align-items: center; justify-content: space-between;
-      background: var(--bg-soft);
-      border-top: 1px solid var(--border);
+      background: var(--surface);
+      border-top: 2px solid var(--border);
     }
-    .footer-brand { font-size: 11px; font-weight: 700; color: var(--navy); letter-spacing: -0.2px; }
-    .footer-ver   { font-size: 10px; color: var(--text-muted); }
+    .footer-brand { font-size: 12px; font-weight: 900; color: var(--green-dark); }
+    .footer-ver   { font-size: 10px; color: var(--muted); font-weight: 700; }
   </style>
 </head>
 <body>
 
   <div class="header">
     <div class="header-brand">
-      <div class="brand-dot"></div>
+      <div class="brand-icon">🛡️</div>
       <span class="brand-name">ClickSafe</span>
     </div>
     <button class="header-btn" id="settings-btn" title="Settings">⚙️</button>
   </div>
 
   <div class="score-block">
-    <div class="score-top">
+    <div class="score-inner">
       <div class="ring-wrap">
         <svg viewBox="0 0 72 72" xmlns="http://www.w3.org/2000/svg">
           <circle class="ring-bg"  cx="36" cy="36" r="30"/>
@@ -239,7 +287,7 @@
             cx="36" cy="36" r="30"
             stroke-dasharray="188.5"
             stroke-dashoffset="188.5"
-            stroke="#1E3A8A"/>
+            stroke="#58CC02"/>
         </svg>
         <div class="ring-inner">
           <span class="ring-num" id="ring-num">—</span>
@@ -249,12 +297,12 @@
       <div class="score-right">
         <div class="score-verdict" id="score-verdict">Scanning…</div>
         <div class="score-plain"   id="score-plain">Analyzing this page…</div>
+        <div class="page-url"      id="page-url">—</div>
+        <span class="conn-pill" id="conn-pill">
+          <span class="conn-dot"></span>Checking…
+        </span>
       </div>
     </div>
-    <div class="page-url" id="page-url">—</div>
-    <span class="conn-pill" id="conn-pill">
-      <span class="conn-dot"></span>Checking…
-    </span>
   </div>
 
   <div class="btn-row">
@@ -262,35 +310,35 @@
     <button class="btn btn-secondary" id="settings-btn2">Settings</button>
   </div>
 
-  <div class="gap"></div>
+  <div class="divider"></div>
 
   <div class="section">
     <div class="section-label">Who's watching you</div>
     <div id="company-list">
       <div class="empty-state">
-        <img src="../assets/graphics/notrackers.svg" alt="No trackers" />
-        <div class="empty-title">No trackers detected</div>
-        <div class="empty-sub">This page looks clean</div>
+        <img src="../assets/graphics/noTrackers.svg" alt="No trackers" />
+        <div class="empty-title">No trackers detected!</div>
+        <div class="empty-sub">This page looks clean 🎉</div>
       </div>
     </div>
   </div>
 
-  <div class="gap"></div>
+  <div class="divider"></div>
 
   <div class="section">
     <div class="section-label">This page</div>
     <div class="stat-grid">
       <div class="stat-box">
-        <div class="stat-label">Companies tracking</div>
-        <div class="stat-val danger" id="stat-companies">0</div>
+        <div class="stat-label">Companies</div>
+        <div class="stat-val" id="stat-companies">0</div>
       </div>
       <div class="stat-box">
         <div class="stat-label">Tracker scripts</div>
-        <div class="stat-val warn" id="stat-trackers">0</div>
+        <div class="stat-val" id="stat-trackers">0</div>
       </div>
       <div class="stat-box">
-        <div class="stat-label">Tracking cookies</div>
-        <div class="stat-val warn" id="stat-cookie-trackers">0</div>
+        <div class="stat-label">Track. cookies</div>
+        <div class="stat-val" id="stat-cookie-trackers">0</div>
       </div>
       <div class="stat-box">
         <div class="stat-label">Mixed content</div>
@@ -299,7 +347,7 @@
     </div>
   </div>
 
-  <div class="gap"></div>
+  <div class="divider"></div>
 
   <div class="section">
     <div class="section-label">This session</div>
