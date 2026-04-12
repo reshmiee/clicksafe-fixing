@@ -3,22 +3,44 @@
 <head>
   <meta charset="UTF-8" />
   <title>ClickSafe</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
+    :root {
+      --purple:       #6C47FF;
+      --purple-light: #EDE9FF;
+      --purple-mid:   #9B7EFF;
+      --bg:           #FFFFFF;
+      --bg-soft:      #F7F6FF;
+      --text:         #0A0A0F;
+      --text-muted:   #6B7280;
+      --green:        #22C55E;
+      --green-light:  #DCFCE7;
+      --red:          #EF4444;
+      --red-light:    #FEE2E2;
+      --amber:        #F59E0B;
+      --amber-light:  #FEF3C7;
+      --border:       #EBEBF0;
+      --radius:       10px;
+      --radius-sm:    7px;
+    }
+
     * { margin: 0; padding: 0; box-sizing: border-box; }
+
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
-      background: #f9fafb;
+      font-family: 'Space Grotesk', -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      font-size: 13px;
       height: 100vh;
       overflow-y: auto;
       overflow-x: hidden;
-      color: #111827;
-      font-size: 13px;
     }
 
+    /* Header */
     .header {
-      background: #1e40af;
-      color: white;
-      padding: 12px 14px;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      padding: 13px 16px;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -26,322 +48,283 @@
       top: 0;
       z-index: 10;
     }
-    .header-left { display: flex; align-items: center; gap: 8px; }
-    .header h1 { font-size: 15px; font-weight: 700; letter-spacing: -0.3px; }
-    .header-sub { font-size: 10px; opacity: 0.7; margin-top: 1px; }
-    .settings-btn {
-      background: rgba(255,255,255,0.15);
-      border: none; color: white;
+    .header-brand { display: flex; align-items: center; gap: 8px; }
+    .brand-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--purple); }
+    .brand-name { font-size: 15px; font-weight: 700; color: var(--text); letter-spacing: -0.4px; }
+    .header-btn {
+      background: var(--bg-soft);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
       width: 30px; height: 30px;
-      border-radius: 7px; cursor: pointer;
-      font-size: 14px;
+      border-radius: var(--radius-sm);
+      cursor: pointer; font-size: 13px;
       display: flex; align-items: center; justify-content: center;
-      transition: background 0.2s;
+      transition: background 0.15s, color 0.15s;
     }
-    .settings-btn:hover { background: rgba(255,255,255,0.25); }
+    .header-btn:hover { background: var(--purple-light); color: var(--purple); border-color: var(--purple-light); }
 
-    /* Score card */
-    .score-card {
-      background: white;
-      padding: 14px;
-      border-bottom: 1px solid #e5e7eb;
+    /* Score block */
+    .score-block {
+      padding: 20px 16px 16px;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
     }
-    .score-top {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      margin-bottom: 10px;
-    }
-    .score-ring-wrap {
-      position: relative;
-      width: 68px; height: 68px;
-      flex-shrink: 0;
-    }
-    .score-ring-wrap svg {
-      width: 68px; height: 68px;
-      transform: rotate(-90deg);
-    }
-    .ring-bg  { fill: none; stroke: #e5e7eb; stroke-width: 7; }
+    .score-top { display: flex; align-items: center; gap: 16px; margin-bottom: 12px; }
+
+    .ring-wrap { position: relative; width: 72px; height: 72px; flex-shrink: 0; }
+    .ring-wrap svg { width: 72px; height: 72px; transform: rotate(-90deg); }
+    .ring-bg  { fill: none; stroke: var(--border); stroke-width: 6; }
     .ring-arc {
-      fill: none; stroke-width: 7; stroke-linecap: round;
-      transition: stroke-dashoffset 0.7s ease, stroke 0.4s;
+      fill: none; stroke-width: 6; stroke-linecap: round;
+      transition: stroke-dashoffset 0.8s cubic-bezier(.4,0,.2,1), stroke 0.4s;
     }
-    .ring-label {
+    .ring-inner {
       position: absolute; inset: 0;
       display: flex; flex-direction: column;
       align-items: center; justify-content: center;
     }
-    .ring-number { font-size: 17px; font-weight: 700; line-height: 1; }
-    .ring-sub { font-size: 9px; color: #9ca3af; margin-top: 1px; }
+    .ring-num { font-size: 20px; font-weight: 700; line-height: 1; letter-spacing: -1px; }
+    .ring-sub { font-size: 9px; color: var(--text-muted); margin-top: 1px; font-weight: 500; }
 
-    .score-info { flex: 1; }
-    .score-verdict { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
-    .score-plain {
-      font-size: 12px;
-      color: #374151;
-      line-height: 1.5;
-      background: #f3f4f6;
-      border-radius: 6px;
-      padding: 7px 9px;
-    }
+    .score-right { flex: 1; min-width: 0; }
+    .score-verdict { font-size: 16px; font-weight: 700; letter-spacing: -0.4px; margin-bottom: 5px; line-height: 1.2; }
+    .score-plain { font-size: 12px; color: var(--text-muted); line-height: 1.55; }
 
-    /* Connection badge row */
-    .connection-row {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .conn-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      padding: 3px 9px;
-      border-radius: 999px;
-      font-size: 11px;
-      font-weight: 600;
-    }
-    .conn-badge.secure   { background: #dcfce7; color: #15803d; }
-    .conn-badge.insecure { background: #fee2e2; color: #dc2626; }
-    .conn-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+    .page-url { font-size: 11px; color: var(--text-muted); word-break: break-all; line-height: 1.4; margin-bottom: 8px; }
 
-    /* Action buttons */
+    .conn-pill {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 4px 10px; border-radius: 999px;
+      font-size: 11px; font-weight: 600;
+    }
+    .conn-pill.secure   { background: var(--green-light); color: #15803d; }
+    .conn-pill.insecure { background: var(--red-light);   color: #dc2626; }
+    .conn-dot { width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
+
+    /* Buttons */
     .btn-row {
       display: flex; gap: 8px;
-      padding: 10px 14px;
-      background: white;
-      border-bottom: 1px solid #e5e7eb;
+      padding: 12px 16px;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
     }
-    .btn-action {
-      flex: 1; padding: 7px;
-      border-radius: 7px;
-      font-size: 11px; font-weight: 600;
+    .btn {
+      flex: 1; padding: 8px 10px;
+      border-radius: var(--radius-sm);
+      font-size: 12px; font-weight: 600;
       cursor: pointer; border: none;
-      text-align: center;
       font-family: inherit;
-      transition: opacity 0.15s;
+      transition: opacity 0.15s, transform 0.1s;
+      letter-spacing: -0.2px;
     }
-    .btn-action:hover { opacity: 0.85; }
-    .btn-dashboard { background: #1e40af; color: white; }
-    .btn-settings-action { background: #f3f4f6; color: #374151; border: 1px solid #e5e7eb; }
+    .btn:active { transform: scale(0.97); }
+    .btn-primary   { background: var(--purple); color: white; }
+    .btn-primary:hover { opacity: 0.88; }
+    .btn-secondary { background: var(--bg-soft); color: var(--text); border: 1px solid var(--border); }
+    .btn-secondary:hover { background: var(--purple-light); border-color: var(--purple-light); color: var(--purple); }
 
-    .gap { height: 6px; background: #f3f4f6; }
+    .gap { height: 6px; background: var(--bg-soft); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
 
-    /* Who's watching section */
-    .section {
-      background: white;
-      padding: 12px 14px;
-      border-bottom: 1px solid #e5e7eb;
-    }
-    .section-title {
-      font-size: 10px;
-      color: #6b7280;
+    /* Section */
+    .section { background: var(--bg); padding: 14px 16px; border-bottom: 1px solid var(--border); }
+    .section-label {
+      font-size: 10px; font-weight: 700;
+      color: var(--text-muted);
       text-transform: uppercase;
-      letter-spacing: 0.07em;
-      font-weight: 600;
-      margin-bottom: 10px;
+      letter-spacing: 0.08em;
+      margin-bottom: 12px;
     }
 
+    /* Company cards */
     .company-card {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 8px 10px;
-      background: #f9fafb;
-      border: 1px solid #e5e7eb;
-      border-radius: 8px;
-      margin-bottom: 6px;
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 11px;
+      background: var(--bg-soft);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      margin-bottom: 7px;
+      transition: border-color 0.15s;
     }
-    .company-logo {
-      width: 28px; height: 28px;
-      border-radius: 6px;
-      background: #e5e7eb;
+    .company-card:last-child { margin-bottom: 0; }
+    .company-card:hover { border-color: var(--purple-mid); }
+
+    .company-avatar {
+      width: 32px; height: 32px;
+      border-radius: 8px;
+      background: var(--purple-light);
       display: flex; align-items: center; justify-content: center;
-      font-size: 13px;
-      font-weight: 700;
-      color: #374151;
+      font-size: 11px; font-weight: 700;
+      color: var(--purple);
       flex-shrink: 0;
+      letter-spacing: -0.3px;
     }
-    .company-info { flex: 1; min-width: 0; }
-    .company-name { font-weight: 600; font-size: 12px; color: #111827; }
-    .company-action { font-size: 11px; color: #6b7280; margin-top: 1px; }
-    .company-tier {
-      font-size: 10px;
-      font-weight: 600;
-      padding: 2px 7px;
-      border-radius: 999px;
-      flex-shrink: 0;
-    }
-    .tier-1 { background: #fee2e2; color: #dc2626; }
-    .tier-2 { background: #fef3c7; color: #92400e; }
-    .tier-3 { background: #f3f4f6; color: #6b7280; }
+    .company-avatar.t2 { background: var(--amber-light); color: #92400e; }
+    .company-avatar.t3 { background: var(--border);      color: var(--text-muted); }
 
-    .no-trackers {
-      text-align: center;
-      padding: 16px 0;
-      color: #6b7280;
-      font-size: 12px;
-    }
-    .no-trackers-icon { width: 120px; height: 120px; display: block; margin: 0 auto 10px; }
+    .company-body { flex: 1; min-width: 0; }
+    .company-name { font-size: 13px; font-weight: 600; color: var(--text); letter-spacing: -0.2px; }
+    .company-what { font-size: 11px; color: var(--text-muted); margin-top: 1px; line-height: 1.4; }
 
-    /* Stats row */
-    .stat-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 6px;
+    .tier-badge {
+      font-size: 10px; font-weight: 700;
+      padding: 3px 8px; border-radius: 999px;
+      flex-shrink: 0; letter-spacing: 0.02em;
     }
-    .stat-box {
-      background: #f9fafb;
-      border: 1px solid #e5e7eb;
-      border-radius: 8px;
-      padding: 9px 10px;
-    }
-    .stat-box-label { font-size: 10px; color: #6b7280; margin-bottom: 3px; }
-    .stat-box-value { font-size: 18px; font-weight: 700; color: #1e40af; }
-    .stat-box-value.danger { color: #dc2626; }
-    .stat-box-value.warn   { color: #d97706; }
+    .t1-badge { background: var(--red-light);   color: #dc2626; }
+    .t2-badge { background: var(--amber-light); color: #92400e; }
+    .t3-badge { background: var(--border);      color: var(--text-muted); }
 
-    /* Session totals */
-    .session-row {
-      display: flex;
-      justify-content: space-between;
+    /* Empty state */
+    .empty-state {
+      display: flex; flex-direction: column;
       align-items: center;
-      padding: 6px 0;
-      border-bottom: 1px solid #f3f4f6;
+      padding: 20px 0 10px;
+      text-align: center;
+    }
+    .empty-state img { width: 110px; height: 110px; margin-bottom: 10px; object-fit: contain; }
+    .empty-title { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 3px; }
+    .empty-sub   { font-size: 11px; color: var(--text-muted); }
+
+    /* Stat grid */
+    .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; }
+    .stat-box {
+      background: var(--bg-soft);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 10px 11px;
+    }
+    .stat-label { font-size: 10px; color: var(--text-muted); font-weight: 500; margin-bottom: 4px; }
+    .stat-val   { font-size: 22px; font-weight: 700; letter-spacing: -1px; color: var(--purple); }
+    .stat-val.danger { color: var(--red); }
+    .stat-val.warn   { color: var(--amber); }
+
+    /* Session rows */
+    .session-row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 7px 0;
+      border-bottom: 1px solid var(--border);
       font-size: 12px;
     }
     .session-row:last-child { border-bottom: none; }
-    .session-label { color: #6b7280; }
-    .session-value { font-weight: 700; color: #1e40af; }
+    .session-key { color: var(--text-muted); }
+    .session-val { font-weight: 700; color: var(--text); letter-spacing: -0.3px; }
 
-    .page-url-text {
-      font-size: 11px;
-      color: #6b7280;
-      word-break: break-all;
-      margin-bottom: 8px;
-      line-height: 1.4;
-    }
-
+    /* Footer */
     .footer {
-      padding: 10px 14px;
-      text-align: center;
-      font-size: 10px;
-      color: #9ca3af;
-      background: #f9fafb;
-      border-top: 1px solid #e5e7eb;
+      padding: 12px 16px;
+      display: flex; align-items: center; justify-content: space-between;
+      background: var(--bg-soft);
+      border-top: 1px solid var(--border);
     }
+    .footer-brand { font-size: 11px; font-weight: 700; color: var(--purple); letter-spacing: -0.2px; }
+    .footer-ver   { font-size: 10px; color: var(--text-muted); }
   </style>
 </head>
 <body>
 
   <div class="header">
-    <div class="header-left">
-      <div>
-        <h1>ClickSafe</h1>
-        <div class="header-sub">Privacy Report</div>
-      </div>
+    <div class="header-brand">
+      <div class="brand-dot"></div>
+      <span class="brand-name">ClickSafe</span>
     </div>
-    <button class="settings-btn" id="settings-btn" title="Settings">⚙️</button>
+    <button class="header-btn" id="settings-btn" title="Settings">⚙️</button>
   </div>
 
-  <!-- Score card -->
-  <div class="score-card">
+  <div class="score-block">
     <div class="score-top">
-      <div class="score-ring-wrap">
-        <svg viewBox="0 0 68 68" xmlns="http://www.w3.org/2000/svg">
-          <circle class="ring-bg"  cx="34" cy="34" r="28"/>
+      <div class="ring-wrap">
+        <svg viewBox="0 0 72 72" xmlns="http://www.w3.org/2000/svg">
+          <circle class="ring-bg"  cx="36" cy="36" r="30"/>
           <circle class="ring-arc" id="ring-arc"
-            cx="34" cy="34" r="28"
-            stroke-dasharray="175.9"
-            stroke-dashoffset="175.9"
-            stroke="#16a34a"/>
+            cx="36" cy="36" r="30"
+            stroke-dasharray="188.5"
+            stroke-dashoffset="188.5"
+            stroke="#6C47FF"/>
         </svg>
-        <div class="ring-label">
-          <span class="ring-number" id="ring-number">—</span>
+        <div class="ring-inner">
+          <span class="ring-num" id="ring-num">—</span>
           <span class="ring-sub">/100</span>
         </div>
       </div>
-      <div class="score-info">
+      <div class="score-right">
         <div class="score-verdict" id="score-verdict">Scanning…</div>
-        <div class="score-plain" id="score-plain">Analyzing this page…</div>
+        <div class="score-plain"   id="score-plain">Analyzing this page…</div>
       </div>
     </div>
-    <div class="connection-row">
-      <div class="page-url-text" id="page-url">Loading…</div>
-    </div>
-    <span class="conn-badge" id="conn-badge">
-      <span class="conn-dot"></span>
-      Checking…
+    <div class="page-url" id="page-url">—</div>
+    <span class="conn-pill" id="conn-pill">
+      <span class="conn-dot"></span>Checking…
     </span>
   </div>
 
-  <!-- Action buttons -->
   <div class="btn-row">
-    <button class="btn-action btn-dashboard" id="dashboard-btn">Dashboard</button>
-    <button class="btn-action btn-settings-action" id="settings-btn2">Settings</button>
+    <button class="btn btn-primary"   id="dashboard-btn">Dashboard</button>
+    <button class="btn btn-secondary" id="settings-btn2">Settings</button>
   </div>
 
   <div class="gap"></div>
 
-  <!-- Who's watching you -->
   <div class="section">
-    <div class="section-title">Who's watching you on this page</div>
+    <div class="section-label">Who's watching you</div>
     <div id="company-list">
-      <div class="no-trackers">
-        <span class="no-trackers-icon">✓</span>
-        Scanning for trackers…
+      <div class="empty-state">
+        <img src="../assets/graphics/notrackers.svg" alt="No trackers" />
+        <div class="empty-title">No trackers detected</div>
+        <div class="empty-sub">This page looks clean</div>
       </div>
     </div>
   </div>
 
   <div class="gap"></div>
 
-  <!-- This page stats -->
   <div class="section">
-    <div class="section-title">This page</div>
+    <div class="section-label">This page</div>
     <div class="stat-grid">
       <div class="stat-box">
-        <div class="stat-box-label">Companies tracking</div>
-        <div class="stat-box-value danger" id="stat-companies">0</div>
+        <div class="stat-label">Companies tracking</div>
+        <div class="stat-val danger" id="stat-companies">0</div>
       </div>
       <div class="stat-box">
-        <div class="stat-box-label">Tracker scripts</div>
-        <div class="stat-box-value warn" id="stat-trackers">0</div>
+        <div class="stat-label">Tracker scripts</div>
+        <div class="stat-val warn" id="stat-trackers">0</div>
       </div>
       <div class="stat-box">
-        <div class="stat-box-label">Tracking cookies</div>
-        <div class="stat-box-value warn" id="stat-cookie-trackers">0</div>
+        <div class="stat-label">Tracking cookies</div>
+        <div class="stat-val warn" id="stat-cookie-trackers">0</div>
       </div>
       <div class="stat-box">
-        <div class="stat-box-label">Mixed content</div>
-        <div class="stat-box-value" id="stat-mixed">0</div>
+        <div class="stat-label">Mixed content</div>
+        <div class="stat-val" id="stat-mixed">0</div>
       </div>
     </div>
   </div>
 
   <div class="gap"></div>
 
-  <!-- Session totals -->
   <div class="section">
-    <div class="section-title">This session</div>
+    <div class="section-label">This session</div>
     <div class="session-row">
-      <span class="session-label">Companies that tracked you</span>
-      <span class="session-value" id="stat-total-companies">0</span>
+      <span class="session-key">Companies that tracked you</span>
+      <span class="session-val" id="stat-total-companies">0</span>
     </div>
     <div class="session-row">
-      <span class="session-label">Tracker scripts blocked</span>
-      <span class="session-value" id="stat-total-trackers">0</span>
+      <span class="session-key">Tracker scripts found</span>
+      <span class="session-val" id="stat-total-trackers">0</span>
     </div>
     <div class="session-row">
-      <span class="session-label">Tracking cookies found</span>
-      <span class="session-value" id="stat-total-cookie-trackers">0</span>
+      <span class="session-key">Tracking cookies found</span>
+      <span class="session-val" id="stat-total-cookie-trackers">0</span>
     </div>
     <div class="session-row">
-      <span class="session-label">Links checked</span>
-      <span class="session-value" id="stat-total-links">0</span>
+      <span class="session-key">Links checked</span>
+      <span class="session-val" id="stat-total-links">0</span>
     </div>
   </div>
 
-  <div class="footer">ClickSafe v1.4.0</div>
+  <div class="footer">
+    <span class="footer-brand">ClickSafe</span>
+    <span class="footer-ver">v1.4.0</span>
+  </div>
 
   <script src="sidepanel.js"></script>
   <script>
