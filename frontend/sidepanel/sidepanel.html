@@ -44,66 +44,49 @@
       overflow-x: hidden;
     }
 
-    /* HEADER */
+    /* HEADER — white bar with brand + score inline */
     .header {
-      background: var(--green);
-      padding: 14px 16px;
+      background: var(--surface);
+      padding: 10px 16px;
       display: flex;
       align-items: center;
-      justify-content: space-between;
+      gap: 12px;
       position: sticky;
       top: 0;
       z-index: 10;
-      border-bottom: 3px solid var(--green-dark);
+      border-bottom: 2px solid var(--border);
     }
-    .header-brand { display: flex; align-items: center; gap: 9px; }
+    .header-brand { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
     .brand-icon {
-      width: 30px; height: 30px;
-      background: white;
-      border-radius: 10px;
+      width: 28px; height: 28px;
+      background: var(--green-bg);
+      border-radius: 9px;
       border: 2px solid var(--green-dark);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 16px;
-    }
-    .brand-name {
-      font-size: 16px; font-weight: 900; color: white;
-      letter-spacing: -0.3px;
-      text-shadow: 0 2px 0 var(--green-dark);
-    }
-    .header-btn {
-      background: white;
-      border: 2px solid var(--green-dark);
-      color: var(--green-dark);
-      width: 32px; height: 32px;
-      border-radius: var(--r-xs);
-      cursor: pointer;
       display: flex; align-items: center; justify-content: center;
       font-size: 15px;
-      font-weight: 900;
-      transition: transform 0.1s;
     }
-    .header-btn:active { transform: scale(0.93); }
+    .brand-name {
+      font-size: 15px; font-weight: 900; color: var(--text-dark);
+      letter-spacing: -0.3px;
+    }
 
-    /* SCORE BLOCK */
-    .score-block {
-      background: var(--green);
-      padding: 4px 16px 20px;
-    }
+    /* SCORE BLOCK — collapsed, content moved into header */
+    .score-block { display: none; }
+
+    /* Score inline (lives inside .header) */
     .score-inner {
-      background: white;
-      border: 3px solid var(--green-dark);
-      border-radius: var(--r);
-      padding: 16px;
+      flex: 1;
       display: flex;
       align-items: center;
-      gap: 14px;
+      gap: 10px;
+      min-width: 0;
     }
 
-    .ring-wrap { position: relative; width: 72px; height: 72px; flex-shrink: 0; }
-    .ring-wrap svg { width: 72px; height: 72px; transform: rotate(-90deg); }
-    .ring-bg  { fill: none; stroke: var(--border); stroke-width: 6; }
+    .ring-wrap { position: relative; width: 48px; height: 48px; flex-shrink: 0; }
+    .ring-wrap svg { width: 48px; height: 48px; transform: rotate(-90deg); }
+    .ring-bg  { fill: none; stroke: var(--border); stroke-width: 5; }
     .ring-arc {
-      fill: none; stroke-width: 6; stroke-linecap: round;
+      fill: none; stroke-width: 5; stroke-linecap: round;
       transition: stroke-dashoffset 0.9s cubic-bezier(.4,0,.2,1), stroke 0.4s;
     }
     .ring-inner {
@@ -111,17 +94,17 @@
       display: flex; flex-direction: column;
       align-items: center; justify-content: center;
     }
-    .ring-num { font-size: 21px; font-weight: 900; color: var(--text-dark); line-height: 1; }
-    .ring-sub { font-size: 10px; color: var(--muted); font-weight: 700; }
+    .ring-num { font-size: 14px; font-weight: 900; color: var(--text-dark); line-height: 1; }
+    .ring-sub { font-size: 8px; color: var(--muted); font-weight: 700; }
 
     .score-right { flex: 1; min-width: 0; }
-    .score-verdict { font-size: 15px; font-weight: 900; color: var(--text-dark); margin-bottom: 4px; }
-    .score-plain   { font-size: 11px; color: var(--muted); line-height: 1.5; margin-bottom: 8px; font-weight: 600; }
-    .page-url { font-size: 10px; color: var(--muted); word-break: break-all; line-height: 1.4; margin-bottom: 8px; font-weight: 600; }
+    .score-verdict { font-size: 12px; font-weight: 900; color: var(--text-dark); margin-bottom: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .score-plain   { display: none; }
+    .page-url { font-size: 10px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 4px; font-weight: 600; }
 
     .conn-pill {
       display: inline-flex; align-items: center; gap: 5px;
-      padding: 4px 10px; border-radius: 999px;
+      padding: 3px 8px; border-radius: 999px;
       font-size: 10px; font-weight: 800;
     }
     .conn-pill.secure   { background: var(--green-bg); color: var(--green-dark); border: 2px solid var(--green-dark); }
@@ -275,18 +258,14 @@
       <div class="brand-icon">🛡️</div>
       <span class="brand-name">ClickSafe</span>
     </div>
-    <button class="header-btn" id="settings-btn" title="Settings">⚙️</button>
-  </div>
-
-  <div class="score-block">
     <div class="score-inner">
       <div class="ring-wrap">
-        <svg viewBox="0 0 72 72" xmlns="http://www.w3.org/2000/svg">
-          <circle class="ring-bg"  cx="36" cy="36" r="30"/>
+        <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+          <circle class="ring-bg"  cx="24" cy="24" r="20"/>
           <circle class="ring-arc" id="ring-arc"
-            cx="36" cy="36" r="30"
-            stroke-dasharray="188.5"
-            stroke-dashoffset="188.5"
+            cx="24" cy="24" r="20"
+            stroke-dasharray="125.7"
+            stroke-dashoffset="125.7"
             stroke="#58CC02"/>
         </svg>
         <div class="ring-inner">
@@ -296,7 +275,7 @@
       </div>
       <div class="score-right">
         <div class="score-verdict" id="score-verdict">Scanning…</div>
-        <div class="score-plain"   id="score-plain">Analyzing this page…</div>
+        <div class="score-plain"   id="score-plain"></div>
         <div class="page-url"      id="page-url">—</div>
         <span class="conn-pill" id="conn-pill">
           <span class="conn-dot"></span>Checking…
@@ -380,9 +359,6 @@
       chrome.tabs.create({ url: chrome.runtime.getURL("pages/dashboard/dashboard.html") });
     });
     document.getElementById("settings-btn2")?.addEventListener("click", () => {
-      chrome.tabs.create({ url: chrome.runtime.getURL("pages/settings/settings.html") });
-    });
-    document.getElementById("settings-btn")?.addEventListener("click", () => {
       chrome.tabs.create({ url: chrome.runtime.getURL("pages/settings/settings.html") });
     });
   </script>
