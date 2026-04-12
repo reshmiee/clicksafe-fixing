@@ -167,25 +167,25 @@ function renderGauge(score, companies, isHttps, mixedContent) {
   let color, label, desc;
 
   if (score >= 85) {
-    color = "#22C55E";
+    color = "#16A34A";
     label = "Minimal tracking";
     desc  = "This page has very little tracking. You're mostly in the clear.";
   } else if (score >= 65) {
-    color = "#7DAACB";
+    color = "#1E3A8A";
     label = "Some tracking";
     const names = companies.slice(0, 2).map(c => c.name).join(" and ");
     desc = names
       ? `${names} ${companies.length > 1 ? "are" : "is"} watching your activity here.`
       : "A few trackers were found on this page.";
   } else if (score >= 40) {
-    color = "#C8960C";
+    color = "#B91C1C";
     label = "You're being tracked";
     const t1 = companies.filter(c => c.tier === 1);
     desc = t1.length
       ? `${t1.map(c => c.name).join(", ")} ${t1.length > 1 ? "are" : "is"} building a profile on you.`
       : `${companies.length} companies are collecting your data here.`;
   } else {
-    color = "#CE2626";
+    color = "#7B0000";
     label = "Heavily surveilled";
     const t1 = companies.filter(c => c.tier === 1);
     desc = t1.length

@@ -3,22 +3,25 @@
 <head>
   <meta charset="UTF-8" />
   <title>ClickSafe</title>
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
-      --primary:      #E8DBB3;
-      --primary-dark: #D4C48E;
-      --blue:         #7DAACB;
-      --blue-light:   #D6E8F5;
-      --bg:           #FFFDEB;
-      --bg-soft:      #F5F0D8;
-      --text:         #1A1A14;
-      --text-muted:   #6B6B52;
-      --green:        #22C55E;
+      --navy:         #1E3A8A;
+      --navy-light:   #EEF2FF;
+      --navy-mid:     #3B5FBD;
+      --bg:           #FFFFFF;
+      --bg-soft:      #F8F9FC;
+      --text:         #0A0A0F;
+      --text-muted:   #64748B;
+      --green:        #16A34A;
       --green-light:  #DCFCE7;
-      --red:          #CE2626;
-      --red-light:    #FADDDD;
-      --border:       #DDD8B8;
+      --red-1:        #7B0000;
+      --red-1-light:  #FFE0E0;
+      --red-2:        #B91C1C;
+      --red-2-light:  #FECACA;
+      --red-3:        #DC2626;
+      --red-3-light:  #FEE2E2;
+      --border:       #E2E8F0;
       --radius:       10px;
       --radius-sm:    7px;
     }
@@ -26,7 +29,7 @@
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
-      font-family: 'Space Grotesk', -apple-system, sans-serif;
+      font-family: 'DM Sans', -apple-system, sans-serif;
       background: var(--bg);
       color: var(--text);
       font-size: 13px;
@@ -48,7 +51,7 @@
       z-index: 10;
     }
     .header-brand { display: flex; align-items: center; gap: 8px; }
-    .brand-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--blue); }
+    .brand-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--navy); }
     .brand-name { font-size: 15px; font-weight: 700; color: var(--text); letter-spacing: -0.4px; }
     .header-btn {
       background: var(--bg-soft);
@@ -58,9 +61,9 @@
       border-radius: var(--radius-sm);
       cursor: pointer; font-size: 13px;
       display: flex; align-items: center; justify-content: center;
-      transition: background 0.15s, color 0.15s;
+      transition: background 0.15s, color 0.15s, border-color 0.15s;
     }
-    .header-btn:hover { background: var(--blue-light); color: var(--blue); border-color: var(--blue-light); }
+    .header-btn:hover { background: var(--navy-light); color: var(--navy); border-color: var(--navy); }
 
     /* Score block */
     .score-block {
@@ -117,10 +120,10 @@
       letter-spacing: -0.2px;
     }
     .btn:active { transform: scale(0.97); }
-    .btn-primary   { background: var(--blue); color: white; }
-    .btn-primary:hover { opacity: 0.88; }
-    .btn-secondary { background: var(--primary); color: var(--text); border: 1px solid var(--border); }
-    .btn-secondary:hover { background: var(--primary-dark); border-color: var(--primary-dark); }
+    .btn-primary   { background: var(--navy); color: white; }
+    .btn-primary:hover { background: var(--navy-mid); }
+    .btn-secondary { background: var(--bg-soft); color: var(--text); border: 1px solid var(--border); }
+    .btn-secondary:hover { background: var(--navy-light); border-color: var(--navy); color: var(--navy); }
 
     .gap { height: 6px; background: var(--bg-soft); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
 
@@ -145,20 +148,20 @@
       transition: border-color 0.15s;
     }
     .company-card:last-child { margin-bottom: 0; }
-    .company-card:hover { border-color: var(--blue); }
+    .company-card:hover { border-color: #0A0A0F; }
 
     .company-avatar {
       width: 32px; height: 32px;
       border-radius: 8px;
-      background: var(--blue-light);
+      background: var(--red-1-light);
       display: flex; align-items: center; justify-content: center;
       font-size: 11px; font-weight: 700;
-      color: var(--blue);
+      color: var(--red-1);
       flex-shrink: 0;
       letter-spacing: -0.3px;
     }
-    .company-avatar.t2 { background: var(--primary); color: #5a4a1a; }
-    .company-avatar.t3 { background: var(--border);  color: var(--text-muted); }
+    .company-avatar.t2 { background: var(--red-2-light); color: var(--red-2); }
+    .company-avatar.t3 { background: var(--red-3-light); color: var(--red-3); }
 
     .company-body { flex: 1; min-width: 0; }
     .company-name { font-size: 13px; font-weight: 600; color: var(--text); letter-spacing: -0.2px; }
@@ -169,9 +172,9 @@
       padding: 3px 8px; border-radius: 999px;
       flex-shrink: 0; letter-spacing: 0.02em;
     }
-    .t1-badge { background: var(--red-light);  color: var(--red); }
-    .t2-badge { background: var(--primary);    color: #5a4a1a; }
-    .t3-badge { background: var(--border);     color: var(--text-muted); }
+    .t1-badge { background: var(--red-1-light); color: var(--red-1); }
+    .t2-badge { background: var(--red-2-light); color: var(--red-2); }
+    .t3-badge { background: var(--red-3-light); color: var(--red-3); }
 
     /* Empty state */
     .empty-state {
@@ -193,7 +196,7 @@
       padding: 10px 11px;
     }
     .stat-label { font-size: 10px; color: var(--text-muted); font-weight: 500; margin-bottom: 4px; }
-    .stat-val   { font-size: 22px; font-weight: 700; letter-spacing: -1px; color: var(--blue); }
+    .stat-val   { font-size: 22px; font-weight: 700; letter-spacing: -1px; color: var(--navy); }
 
     /* Session rows */
     .session-row {
@@ -213,7 +216,7 @@
       background: var(--bg-soft);
       border-top: 1px solid var(--border);
     }
-    .footer-brand { font-size: 11px; font-weight: 700; color: var(--blue); letter-spacing: -0.2px; }
+    .footer-brand { font-size: 11px; font-weight: 700; color: var(--navy); letter-spacing: -0.2px; }
     .footer-ver   { font-size: 10px; color: var(--text-muted); }
   </style>
 </head>
@@ -236,7 +239,7 @@
             cx="36" cy="36" r="30"
             stroke-dasharray="188.5"
             stroke-dashoffset="188.5"
-            stroke="#7DAACB"/>
+            stroke="#1E3A8A"/>
         </svg>
         <div class="ring-inner">
           <span class="ring-num" id="ring-num">—</span>
