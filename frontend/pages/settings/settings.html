@@ -2,296 +2,184 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>ClickSafe Settings</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ClickSafe — Settings</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-
-    body {
-      font-family: Arial, sans-serif;
-      background: #f3f4f6;
-      min-height: 100vh;
-      padding: 32px;
-      color: #111827;
+    :root {
+      --green:       #58CC02;
+      --green-dark:  #46A302;
+      --green-bg:    #D7FFB8;
+      --purple:      #CE82FF;
+      --purple-dark: #9C44CC;
+      --purple-bg:   #F1D4FF;
+      --red:         #FF4B4B;
+      --red-dark:    #CC2020;
+      --red-bg:      #FFDFE0;
+      --orange:      #FF9600;
+      --orange-bg:   #FFEAA0;
+      --bg:          #F7F7F7;
+      --surface:     #FFFFFF;
+      --text-dark:   #3C3C3C;
+      --muted:       #888888;
+      --border:      #E5E5E5;
+      --r:           16px;
+      --r-sm:        12px;
+      --r-xs:        8px;
     }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family:'Nunito',sans-serif; background:var(--bg); color:var(--text-dark); font-size:13px; min-height:100vh; }
 
-    .container {
-      max-width: 600px;
-      margin: 0 auto;
-    }
+    .header { background:var(--green); padding:14px 24px; display:flex; align-items:center; justify-content:space-between; border-bottom:3px solid var(--green-dark); position:sticky; top:0; z-index:10; }
+    .header-brand { display:flex; align-items:center; gap:10px; }
+    .brand-icon { width:32px; height:32px; background:white; border-radius:10px; border:2px solid var(--green-dark); display:flex; align-items:center; justify-content:center; font-size:17px; }
+    .brand-name { font-size:18px; font-weight:900; color:white; text-shadow:0 2px 0 var(--green-dark); }
+    .header-back { background:white; border:2px solid var(--green-dark); color:var(--green-dark); border-radius:var(--r-xs); padding:5px 13px; font-size:12px; font-weight:800; cursor:pointer; font-family:inherit; text-decoration:none; }
+    .header-back:hover { background:var(--green-bg); }
 
-    .header {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 32px;
-    }
+    .page { max-width:680px; margin:0 auto; padding:28px 24px 60px; }
+    .page-title { font-size:22px; font-weight:900; color:var(--text-dark); margin-bottom:4px; }
+    .page-sub { font-size:12px; color:var(--muted); font-weight:600; margin-bottom:24px; }
 
-    .header h1 {
-      font-size: 24px;
-      font-weight: bold;
-      color: #1e40af;
-    }
+    .card { background:var(--surface); border:2px solid var(--border); border-radius:var(--r); margin-bottom:16px; overflow:hidden; }
+    .card-header { padding:14px 18px 12px; border-bottom:2px solid var(--border); display:flex; align-items:center; gap:10px; }
+    .card-header-icon { width:32px; height:32px; border-radius:var(--r-xs); display:flex; align-items:center; justify-content:center; font-size:15px; flex-shrink:0; }
+    .card-title { font-size:14px; font-weight:900; color:var(--text-dark); }
+    .card-sub-text { font-size:11px; color:var(--muted); font-weight:600; }
 
-    .header p {
-      font-size: 14px;
-      color: #6b7280;
-    }
+    .toggle-row { display:flex; justify-content:space-between; align-items:center; padding:13px 18px; border-bottom:2px solid var(--border); }
+    .toggle-row:last-child { border-bottom:none; }
+    .toggle-row:hover { background:var(--bg); }
+    .toggle-label { font-size:13px; font-weight:800; color:var(--text-dark); }
+    .toggle-desc { font-size:11px; color:var(--muted); font-weight:600; margin-top:2px; }
 
-    .card {
-      background: white;
-      border-radius: 12px;
-      padding: 24px;
-      margin-bottom: 20px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    }
+    .toggle { position:relative; width:46px; height:26px; flex-shrink:0; }
+    .toggle input { opacity:0; width:0; height:0; }
+    .toggle-slider { position:absolute; cursor:pointer; top:0; left:0; right:0; bottom:0; background:var(--border); border-radius:26px; border:2px solid #ccc; transition:0.25s; }
+    .toggle-slider:before { content:""; position:absolute; height:18px; width:18px; left:2px; bottom:2px; background:white; border-radius:50%; transition:0.25s; box-shadow:0 2px 4px rgba(0,0,0,0.15); }
+    input:checked + .toggle-slider { background:var(--green); border-color:var(--green-dark); }
+    input:checked + .toggle-slider:before { transform:translateX(20px); }
 
-    .card h2 {
-      font-size: 16px;
-      font-weight: bold;
-      color: #111827;
-      margin-bottom: 16px;
-      padding-bottom: 12px;
-      border-bottom: 1px solid #e5e7eb;
-    }
+    .whitelist-body { padding:14px 18px; }
+    .whitelist-input-row { display:flex; gap:8px; margin-bottom:12px; }
+    .whitelist-input-row input { flex:1; padding:9px 13px; border:2px solid var(--border); border-radius:var(--r-xs); font-size:13px; font-family:inherit; font-weight:600; color:var(--text-dark); outline:none; background:var(--bg); transition:border-color 0.15s; }
+    .whitelist-input-row input:focus { border-color:var(--green); background:white; }
+    .whitelist-input-row input::placeholder { color:var(--muted); }
+    .btn-add { background:var(--purple); color:white; border:2px solid var(--purple-dark); box-shadow:0 3px 0 var(--purple-dark); border-radius:var(--r-xs); padding:9px 16px; font-size:13px; font-weight:800; cursor:pointer; font-family:inherit; }
+    .btn-add:active { box-shadow:none; transform:translateY(2px); }
 
-    .toggle-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 12px 0;
-      border-bottom: 1px solid #f3f4f6;
-    }
+    .whitelist-items { list-style:none; display:flex; flex-direction:column; gap:6px; }
+    .whitelist-item { display:flex; justify-content:space-between; align-items:center; padding:9px 13px; background:var(--bg); border:2px solid var(--border); border-radius:var(--r-xs); font-size:12px; font-weight:700; color:var(--text-dark); }
+    .btn-remove { background:none; border:none; color:var(--red-dark); cursor:pointer; font-size:14px; font-weight:900; padding:0 4px; }
+    .whitelist-empty { font-size:11px; color:var(--muted); font-weight:600; text-align:center; padding:8px 0; }
 
-    .toggle-row:last-child { border-bottom: none; }
+    .actions { display:flex; gap:12px; margin-top:24px; }
+    .btn-save { flex:1; background:var(--green); color:white; border:2px solid var(--green-dark); box-shadow:0 4px 0 var(--green-dark); border-radius:var(--r-sm); padding:13px 24px; font-size:15px; font-weight:900; cursor:pointer; font-family:inherit; }
+    .btn-save:active { box-shadow:none; transform:translateY(3px); }
+    .btn-reset { background:white; color:var(--text-dark); border:2px solid var(--border); box-shadow:0 4px 0 var(--border); border-radius:var(--r-sm); padding:13px 24px; font-size:15px; font-weight:800; cursor:pointer; font-family:inherit; }
+    .btn-reset:active { box-shadow:none; transform:translateY(3px); }
 
-    .toggle-label { font-size: 14px; color: #374151; }
-    .toggle-desc { font-size: 12px; color: #9ca3af; margin-top: 2px; }
+    .toast { display:none; align-items:center; gap:8px; background:var(--green-bg); color:var(--green-dark); border:2px solid var(--green-dark); border-radius:var(--r-xs); padding:12px 16px; font-size:13px; font-weight:800; margin-top:14px; }
+    .toast.show { display:flex; }
 
-    .toggle {
-      position: relative;
-      width: 44px;
-      height: 24px;
-      flex-shrink: 0;
-    }
-
-    .toggle input { opacity: 0; width: 0; height: 0; }
-
-    .toggle-slider {
-      position: absolute;
-      cursor: pointer;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: #d1d5db;
-      border-radius: 24px;
-      transition: 0.3s;
-    }
-
-    .toggle-slider:before {
-      content: "";
-      position: absolute;
-      height: 18px; width: 18px;
-      left: 3px; bottom: 3px;
-      background: white;
-      border-radius: 50%;
-      transition: 0.3s;
-    }
-
-    input:checked + .toggle-slider { background: #1e40af; }
-    input:checked + .toggle-slider:before { transform: translateX(20px); }
-
-    .whitelist-input {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 12px;
-    }
-
-    .whitelist-input input {
-      flex: 1;
-      padding: 8px 12px;
-      border: 1px solid #d1d5db;
-      border-radius: 8px;
-      font-size: 14px;
-      outline: none;
-    }
-
-    .whitelist-input input:focus { border-color: #1e40af; }
-
-    .btn-add {
-      background: #1e40af;
-      color: white;
-      border: none;
-      padding: 8px 16px;
-      border-radius: 8px;
-      font-size: 14px;
-      cursor: pointer;
-    }
-
-    .whitelist-items { list-style: none; }
-
-    .whitelist-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 8px 12px;
-      background: #f9fafb;
-      border-radius: 6px;
-      margin-bottom: 6px;
-      font-size: 14px;
-      color: #374151;
-    }
-
-    .btn-remove {
-      background: none;
-      border: none;
-      color: #dc2626;
-      cursor: pointer;
-      font-size: 16px;
-    }
-
-    .actions {
-      display: flex;
-      gap: 12px;
-      margin-top: 8px;
-    }
-
-    .btn-save {
-      background: #1e40af;
-      color: white;
-      border: none;
-      padding: 12px 32px;
-      border-radius: 8px;
-      font-size: 15px;
-      font-weight: bold;
-      cursor: pointer;
-      flex: 1;
-    }
-
-    .btn-reset {
-      background: #f3f4f6;
-      color: #6b7280;
-      border: 1px solid #e5e7eb;
-      padding: 12px 32px;
-      border-radius: 8px;
-      font-size: 15px;
-      cursor: pointer;
-    }
-
-    .success-msg {
-      display: none;
-      background: #dcfce7;
-      color: #16a34a;
-      padding: 12px;
-      border-radius: 8px;
-      text-align: center;
-      font-size: 14px;
-      font-weight: bold;
-      margin-top: 12px;
-    }
+    ::-webkit-scrollbar { width:4px; }
+    ::-webkit-scrollbar-track { background:transparent; }
+    ::-webkit-scrollbar-thumb { background:var(--border); border-radius:999px; }
   </style>
 </head>
 <body>
-  <div class="container">
 
-    <!-- Header -->
-    <div class="header">
-      <div>
-        <h1>🛡️ ClickSafe Settings</h1>
-        <p>Customize your security preferences</p>
-      </div>
+  <div class="header">
+    <div class="header-brand">
+      <div class="brand-icon">🛡️</div>
+      <span class="brand-name">ClickSafe</span>
     </div>
-
-    <!-- Feature Toggles -->
-    <div class="card">
-      <h2>Features</h2>
-
-      <div class="toggle-row">
-        <div>
-          <div class="toggle-label">Auto-HTTPS Redirect</div>
-          <div class="toggle-desc">Automatically redirect HTTP to HTTPS</div>
-        </div>
-        <label class="toggle">
-          <input type="checkbox" id="toggle-https" checked />
-          <span class="toggle-slider"></span>
-        </label>
-      </div>
-
-      <div class="toggle-row">
-        <div>
-          <div class="toggle-label">Cookie Tracker Detection</div>
-          <div class="toggle-desc">Detect and log tracking scripts</div>
-        </div>
-        <label class="toggle">
-          <input type="checkbox" id="toggle-cookies" checked />
-          <span class="toggle-slider"></span>
-        </label>
-      </div>
-
-      <div class="toggle-row">
-        <div>
-          <div class="toggle-label">Link Safety Checking</div>
-          <div class="toggle-desc">Check links on hover via Safe Browsing API</div>
-        </div>
-        <label class="toggle">
-          <input type="checkbox" id="toggle-links" checked />
-          <span class="toggle-slider"></span>
-        </label>
-      </div>
-
-      <div class="toggle-row">
-        <div>
-          <div class="toggle-label">Download Scanning</div>
-          <div class="toggle-desc">Scan downloads before they complete</div>
-        </div>
-        <label class="toggle">
-          <input type="checkbox" id="toggle-downloads" checked />
-          <span class="toggle-slider"></span>
-        </label>
-      </div>
-
-      <div class="toggle-row">
-        <div>
-          <div class="toggle-label">Dark Pattern Detector</div>
-          <div class="toggle-desc">Highlight manipulative UI patterns on pages</div>
-        </div>
-        <label class="toggle">
-          <input type="checkbox" id="toggle-darkpatterns" checked />
-          <span class="toggle-slider"></span>
-        </label>
-      </div>
-    </div>
-
-    <!-- Whitelist -->
-    <div class="card">
-      <h2>Trusted Websites (Whitelist)</h2>
-      <div class="whitelist-input">
-        <input type="text" id="whitelist-input" placeholder="e.g. example.com" />
-        <button class="btn-add" id="add-whitelist">Add</button>
-      </div>
-      <ul class="whitelist-items" id="whitelist-list"></ul>
-    </div>
-
-    <!-- Notifications -->
-    <div class="card">
-      <h2>Notifications</h2>
-      <div class="toggle-row">
-        <div>
-          <div class="toggle-label">Show Warning Modals</div>
-          <div class="toggle-desc">Display popups for dangerous links/downloads</div>
-        </div>
-        <label class="toggle">
-          <input type="checkbox" id="toggle-modals" checked />
-          <span class="toggle-slider"></span>
-        </label>
-      </div>
-    </div>
-
-    <!-- Save / Reset -->
-    <div class="actions">
-      <button class="btn-save" id="save-btn">Save Changes</button>
-      <button class="btn-reset" id="reset-btn">Reset to Defaults</button>
-    </div>
-    <div class="success-msg" id="success-msg">Settings saved successfully!</div>
-
+    <a href="../dashboard/dashboard.html" class="header-back">← Dashboard</a>
   </div>
+
+  <div class="page">
+    <div class="page-title">Settings</div>
+    <div class="page-sub">Customize your protection preferences</div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-header-icon" style="background:var(--green-bg)">⚡</div>
+        <div>
+          <div class="card-title">Protection Features</div>
+          <div class="card-sub-text">Toggle individual security modules</div>
+        </div>
+      </div>
+      <div class="toggle-row">
+        <div><div class="toggle-label">Auto-HTTPS Redirect</div><div class="toggle-desc">Automatically upgrade HTTP pages to HTTPS</div></div>
+        <label class="toggle"><input type="checkbox" id="toggle-https" checked /><span class="toggle-slider"></span></label>
+      </div>
+      <div class="toggle-row">
+        <div><div class="toggle-label">Cookie Tracker Detection</div><div class="toggle-desc">Detect and log cross-site tracking cookies</div></div>
+        <label class="toggle"><input type="checkbox" id="toggle-cookies" checked /><span class="toggle-slider"></span></label>
+      </div>
+      <div class="toggle-row">
+        <div><div class="toggle-label">Link Safety Checking</div><div class="toggle-desc">Check links on hover via Safe Browsing API</div></div>
+        <label class="toggle"><input type="checkbox" id="toggle-links" checked /><span class="toggle-slider"></span></label>
+      </div>
+      <div class="toggle-row">
+        <div><div class="toggle-label">Download Scanning</div><div class="toggle-desc">Scan downloads before they complete</div></div>
+        <label class="toggle"><input type="checkbox" id="toggle-downloads" checked /><span class="toggle-slider"></span></label>
+      </div>
+      <div class="toggle-row">
+        <div><div class="toggle-label">Dark Pattern Detector</div><div class="toggle-desc">Highlight manipulative UI patterns on pages</div></div>
+        <label class="toggle"><input type="checkbox" id="toggle-darkpatterns" checked /><span class="toggle-slider"></span></label>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-header-icon" style="background:var(--orange-bg)">🔔</div>
+        <div>
+          <div class="card-title">Notifications</div>
+          <div class="card-sub-text">Control warning popups and alerts</div>
+        </div>
+      </div>
+      <div class="toggle-row">
+        <div><div class="toggle-label">Show Warning Modals</div><div class="toggle-desc">Display popups for dangerous links and downloads</div></div>
+        <label class="toggle"><input type="checkbox" id="toggle-modals" checked /><span class="toggle-slider"></span></label>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-header-icon" style="background:var(--green-bg)">✅</div>
+        <div>
+          <div class="card-title">Trusted Websites</div>
+          <div class="card-sub-text">Sites where scanning is skipped</div>
+        </div>
+      </div>
+      <div class="whitelist-body">
+        <div class="whitelist-input-row">
+          <input type="text" id="whitelist-input" placeholder="e.g. example.com" />
+          <button class="btn-add" id="add-whitelist">+ Add</button>
+        </div>
+        <ul class="whitelist-items" id="whitelist-list">
+          <li class="whitelist-empty">No trusted sites added yet</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button class="btn-save" id="save-btn">💾 Save Changes</button>
+      <button class="btn-reset" id="reset-btn">Reset</button>
+    </div>
+    <div class="toast" id="success-msg">✅ Settings saved successfully!</div>
+  </div>
+
   <script src="settings.js"></script>
+  <script>
+    // Override success message to use toast style
+    const _origSave = document.getElementById('save-btn').onclick;
+    document.getElementById('save-btn').addEventListener('click', () => {
+      const t = document.getElementById('success-msg');
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 3000);
+    });
+  </script>
 </body>
 </html>
