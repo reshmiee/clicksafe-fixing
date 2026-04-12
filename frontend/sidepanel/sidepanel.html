@@ -6,30 +6,28 @@
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
   <style>
     :root {
-      --green:       #58CC02;
-      --green-dark:  #46A302;
-      --green-bg:    #D7FFB8;
-      --blue:        #CE82FF;
-      --blue-dark:   #9C44CC;
-      --blue-bg:     #F1D4FF;
-      --purple:      #CE82FF;
-      --purple-dark: #9C44CC;
-      --purple-bg:   #F1D4FF;
-      --red:         #FF4B4B;
-      --red-dark:    #CC2020;
-      --red-bg:      #FFDFE0;
-      --orange:      #FF9600;
-      --orange-bg:   #FFEAA0;
-      --yellow:      #FFC800;
-      --bg:          #F7F7F7;
-      --surface:     #FFFFFF;
-      --text:        #4B4B4B;
-      --text-dark:   #3C3C3C;
-      --muted:       #AFAFAF;
-      --border:      #E5E5E5;
-      --r:           16px;
-      --r-sm:        12px;
-      --r-xs:        8px;
+      --green:        #58CC02;
+      --green-dark:   #46A302;
+      --green-bg:     #D7FFB8;
+      --purple:       #CE82FF;
+      --purple-dark:  #9C44CC;
+      --purple-bg:    #F1D4FF;
+      --red:          #FF4B4B;
+      --red-dark:     #CC2020;
+      --red-bg:       #FFDFE0;
+      --orange:       #FF9600;
+      --orange-dark:  #CC7700;
+      --orange-bg:    #FFEAA0;
+      --yellow:       #FFC800;
+      --bg:           #F7F7F7;
+      --surface:      #FFFFFF;
+      --text:         #4B4B4B;
+      --text-dark:    #3C3C3C;
+      --muted:        #AFAFAF;
+      --border:       #E5E5E5;
+      --r:            16px;
+      --r-sm:         12px;
+      --r-xs:         8px;
     }
 
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -70,19 +68,16 @@
       letter-spacing: -0.3px;
       text-shadow: 0 2px 0 var(--green-dark);
     }
-    .header-btn {
-      background: white;
-      border: 2px solid var(--green-dark);
-      color: var(--green-dark);
-      width: 32px; height: 32px;
-      border-radius: var(--r-xs);
-      cursor: pointer;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 15px;
-      font-weight: 900;
-      transition: transform 0.1s;
+    .header-conn-pill {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 5px 11px; border-radius: 999px;
+      font-size: 10px; font-weight: 800;
+      white-space: nowrap;
+      cursor: default;
     }
-    .header-btn:active { transform: scale(0.93); }
+    .header-conn-pill.secure   { background: white; color: var(--green-dark); border: 2px solid var(--green-dark); }
+    .header-conn-pill.insecure { background: var(--red-bg); color: var(--red-dark); border: 2px solid var(--red-dark); }
+    .header-conn-pill .conn-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
 
     /* SCORE BLOCK */
     .score-block {
@@ -146,10 +141,10 @@
     }
     .btn:active { transform: scale(0.96); }
     .btn-primary {
-      background: var(--blue);
+      background: var(--purple);
       color: white;
-      border: 2px solid var(--blue-dark);
-      box-shadow: 0 4px 0 var(--blue-dark);
+      border: 2px solid var(--purple-dark);
+      box-shadow: 0 4px 0 var(--purple-dark);
     }
     .btn-primary:active { box-shadow: none; transform: translateY(3px); }
     .btn-secondary {
@@ -227,7 +222,7 @@
       padding: 11px 12px;
     }
     .stat-label { font-size: 10px; color: var(--muted); font-weight: 800; letter-spacing: 0.03em; text-transform: uppercase; margin-bottom: 4px; }
-    .stat-val   { font-size: 26px; font-weight: 900; letter-spacing: -1px; color: var(--blue); }
+    .stat-val   { font-size: 26px; font-weight: 900; letter-spacing: -1px; color: var(--purple); }
 
     /* SESSION ROWS */
     .session-row {
@@ -275,7 +270,9 @@
       <div class="brand-icon">🛡️</div>
       <span class="brand-name">ClickSafe</span>
     </div>
-    <button class="header-btn" id="settings-btn" title="Settings">⚙️</button>
+    <span class="header-conn-pill insecure" id="conn-pill">
+      <span class="conn-dot"></span>Checking…
+    </span>
   </div>
 
   <div class="score-block">
@@ -287,7 +284,7 @@
             cx="36" cy="36" r="30"
             stroke-dasharray="188.5"
             stroke-dashoffset="188.5"
-            stroke="#58CC02"/>
+            stroke="transparent"/>
         </svg>
         <div class="ring-inner">
           <span class="ring-num" id="ring-num">—</span>
@@ -298,9 +295,6 @@
         <div class="score-verdict" id="score-verdict">Scanning…</div>
         <div class="score-plain"   id="score-plain">Analyzing this page…</div>
         <div class="page-url"      id="page-url">—</div>
-        <span class="conn-pill" id="conn-pill">
-          <span class="conn-dot"></span>Checking…
-        </span>
       </div>
     </div>
   </div>
@@ -308,6 +302,17 @@
   <div class="btn-row">
     <button class="btn btn-primary"   id="dashboard-btn">Dashboard</button>
     <button class="btn btn-secondary" id="settings-btn2">Settings</button>
+  </div>
+
+  <div class="streak-bar" id="streak-bar" title="Pages scanned this session">
+    <span class="streak-label" id="streak-label">0 pages</span>
+    <div class="streak-item" id="s1"></div>
+    <div class="streak-item" id="s2"></div>
+    <div class="streak-item" id="s3"></div>
+    <div class="streak-item" id="s4"></div>
+    <div class="streak-item" id="s5"></div>
+    <div class="streak-item" id="s6"></div>
+    <div class="streak-item" id="s7"></div>
   </div>
 
   <div class="divider"></div>
@@ -380,9 +385,6 @@
       chrome.tabs.create({ url: chrome.runtime.getURL("pages/dashboard/dashboard.html") });
     });
     document.getElementById("settings-btn2")?.addEventListener("click", () => {
-      chrome.tabs.create({ url: chrome.runtime.getURL("pages/settings/settings.html") });
-    });
-    document.getElementById("settings-btn")?.addEventListener("click", () => {
       chrome.tabs.create({ url: chrome.runtime.getURL("pages/settings/settings.html") });
     });
   </script>

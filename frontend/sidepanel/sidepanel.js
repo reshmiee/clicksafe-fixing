@@ -105,6 +105,18 @@ chrome.runtime.onMessage.addListener((message) => {
 });
 
 let sessionCompanyNames = new Set();
+let sessionPageCount = 0;
+
+// ── Streak bar ────────────────────────────────────────────────
+function updateStreakBar(count) {
+  const label = document.getElementById("streak-label");
+  if (label) label.textContent = `${count} page${count !== 1 ? "s" : ""} scanned`;
+  for (let i = 1; i <= 7; i++) {
+    const el = document.getElementById(`s${i}`);
+    if (!el) continue;
+    el.className = "streak-item" + (i < count ? " done" : i === count ? " active" : "");
+  }
+}
 
 // ── Render ────────────────────────────────────────────────────
 function render(payload) {
@@ -127,7 +139,7 @@ function render(payload) {
   const pill = document.getElementById("conn-pill");
   if (pill) {
     pill.innerHTML = `<span class="conn-dot"></span> ${isHttps ? "Secure (HTTPS)" : "Not Secure (HTTP)"}`;
-    pill.className = "conn-pill " + (isHttps ? "secure" : "insecure");
+    pill.className = "header-conn-pill " + (isHttps ? "secure" : "insecure");
   }
 
   const trackerDomains = [
@@ -136,7 +148,13 @@ function render(payload) {
   ].filter(Boolean);
 
   const companies = extractCompanies(trackerDomains);
+  const isNewPage = !sessionCompanyNames._lastUrl || sessionCompanyNames._lastUrl !== url;
+  if (isNewPage && url) {
+    sessionPageCount = Math.min(sessionPageCount + 1, 7);
+    sessionCompanyNames._lastUrl = url;
+  }
   companies.forEach(c => sessionCompanyNames.add(c.name));
+  updateStreakBar(sessionPageCount);
 
   const score = computeScore({ isHttps, mixedContent: pageMixedCount, companies });
 
@@ -162,12 +180,10 @@ function renderGauge(score, companies, isHttps, mixedContent) {
   const plain   = document.getElementById("score-plain");
   if (!arc) return;
 
-  arc.style.strokeDashoffset = CIRCUMFERENCE * (1 - score / 100);
-
   let color, label, desc;
 
   if (score >= 85) {
-    color = "#16A34A";
+    color = "#46A302";
     label = "Minimal tracking";
     desc  = "This page has very little tracking. You're mostly in the clear.";
   } else if (score >= 65) {
@@ -178,14 +194,14 @@ function renderGauge(score, companies, isHttps, mixedContent) {
       ? `${names} ${companies.length > 1 ? "are" : "is"} watching your activity here.`
       : "A few trackers were found on this page.";
   } else if (score >= 40) {
-    color = "#B91C1C";
+    color = "#CC7700";
     label = "You're being tracked";
     const t1 = companies.filter(c => c.tier === 1);
     desc = t1.length
       ? `${t1.map(c => c.name).join(", ")} ${t1.length > 1 ? "are" : "is"} building a profile on you.`
       : `${companies.length} companies are collecting your data here.`;
   } else {
-    color = "#7B0000";
+    color = "#CC2020";
     label = "Heavily surveilled";
     const t1 = companies.filter(c => c.tier === 1);
     desc = t1.length
@@ -195,12 +211,20 @@ function renderGauge(score, companies, isHttps, mixedContent) {
 
   if (!isHttps) desc += " Your connection is also unencrypted (HTTP).";
 
-  arc.style.stroke   = color;
-  num.textContent    = score;
-  num.style.color    = color;
+  // Set color immediately (before transition) so the animation sweeps in the right color
+  arc.style.transition = "none";
+  arc.style.stroke = color;
+  arc.style.strokeDashoffset = CIRCUMFERENCE;
+  // Force reflow so the transition fires from offset=full (empty) to the target
+  arc.getBoundingClientRect();
+  arc.style.transition = "";
+  arc.style.strokeDashoffset = CIRCUMFERENCE * (1 - score / 100);
+
+  num.textContent     = score;
+  num.style.color     = color;
   verdict.textContent = label;
   verdict.style.color = color;
-  plain.textContent  = desc;
+  plain.textContent   = desc;
 }
 
 // ── Company list ──────────────────────────────────────────────
@@ -221,7 +245,7 @@ function renderCompanyList(companies) {
   list.innerHTML = companies.map(c => {
     const initials   = c.name.split(" ").map(w => w[0]).join("").slice(0, 2).toUpperCase();
     const tierLabel  = TIER_LABELS[c.tier] || "Tracker";
-    const avatarClass = c.tier === 2 ? "t2" : c.tier === 3 ? "t3" : "";
+    const avatarClass = c.tier === 1 ? "t1" : c.tier === 2 ? "t2" : "t3";
     const badgeClass  = `t${c.tier}-badge`;
     return `
       <div class="company-card">
