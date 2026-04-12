@@ -160,6 +160,7 @@ function render(payload) {
 
   renderGauge(score, companies, isHttps, pageMixedCount);
   renderCompanyList(companies);
+  renderBackFace(pageTrackerScripts, cookieData);
 
   setText("stat-companies",       companies.length);
   setText("stat-trackers",        pageTrackerCount);
@@ -182,34 +183,32 @@ function renderGauge(score, companies, isHttps, mixedContent) {
 
   let color, label, desc;
 
+  const t1 = companies.filter(c => c.tier === 1).length;
+  const t2 = companies.filter(c => c.tier === 2).length;
+  const t3 = companies.filter(c => c.tier === 3).length;
+  const total = companies.length;
+
   if (score >= 85) {
     color = "#46A302";
-    label = "Minimal tracking";
-    desc  = "This page has very little tracking. You're mostly in the clear.";
+    label = "You're safe here";
+    desc  = total === 0
+      ? "No trackers found. This page isn't collecting your data."
+      : "Very little tracking on this page. Nothing to worry about.";
   } else if (score >= 65) {
     color = "#1E3A8A";
     label = "Some tracking";
-    const names = companies.slice(0, 2).map(c => c.name).join(" and ");
-    desc = names
-      ? `${names} ${companies.length > 1 ? "are" : "is"} watching your activity here.`
-      : "A few trackers were found on this page.";
+    desc  = `This page has ${total} tracker${total !== 1 ? "s" : ""} — mostly for analytics. Your data is being collected but it's low risk.`;
   } else if (score >= 40) {
     color = "#CC7700";
     label = "You're being tracked";
-    const t1 = companies.filter(c => c.tier === 1);
-    desc = t1.length
-      ? `${t1.map(c => c.name).join(", ")} ${t1.length > 1 ? "are" : "is"} building a profile on you.`
-      : `${companies.length} companies are collecting your data here.`;
+    desc  = `${t1 > 0 ? `${t1} high-risk tracker${t1 !== 1 ? "s are" : " is"} building an ad profile on you. ` : ""}${t2 > 0 ? `${t2} ad network${t2 !== 1 ? "s are" : " is"} targeting you. ` : ""}Browse carefully.`;
   } else {
     color = "#CC2020";
     label = "Heavily surveilled";
-    const t1 = companies.filter(c => c.tier === 1);
-    desc = t1.length
-      ? `This page is loaded with surveillance. ${t1.map(c => c.name).join(", ")} know you were here.`
-      : `${companies.length} trackers found — this page is heavily monitored.`;
+    desc  = `This page has ${total} trackers — ${t1} high-risk. Your browsing behavior, interests, and identity are likely being recorded and sold.`;
   }
 
-  if (!isHttps) desc += " Your connection is also unencrypted (HTTP).";
+  if (!isHttps) desc += !isHttps && score < 85 ? " Your connection is also unencrypted." : " Also, your connection is unencrypted — avoid entering any personal info.";
 
   // Set color immediately (before transition) so the animation sweeps in the right color
   arc.style.transition = "none";
@@ -239,6 +238,7 @@ function renderCompanyList(companies) {
         <div class="empty-title">No trackers detected</div>
         <div class="empty-sub">This page looks clean</div>
       </div>`;
+    if (typeof window._syncFlipHeight === "function") requestAnimationFrame(window._syncFlipHeight);
     return;
   }
 
@@ -257,9 +257,59 @@ function renderCompanyList(companies) {
         <span class="tier-badge ${badgeClass}">${tierLabel}</span>
       </div>`;
   }).join("");
+  if (typeof window._syncFlipHeight === "function") requestAnimationFrame(window._syncFlipHeight);
 }
 
 function setText(id, val) {
   const el = document.getElementById(id);
   if (el) el.textContent = val;
+}
+
+// ── Back face: cookies + tracker scripts ──────────────────────
+function renderBackFace(trackerScripts, cookieData) {
+  const list = document.getElementById("cookie-script-list");
+  if (!list) return;
+
+  const cookieTrackers = cookieData?.trackers || [];
+  const scripts = (trackerScripts || []).filter(t => (t.tracker || t.domain || t.url));
+
+  let html = "";
+
+  if (cookieTrackers.length > 0) {
+    html += `<div class="detail-name" style="font-size:10px;font-weight:900;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px;">🍪 Tracking Cookies</div>`;
+    html += cookieTrackers.map(t => {
+      const cookie  = t.cookie || t;
+      const reasons = t.reasons || [];
+      return `
+        <div class="detail-item">
+          <div class="detail-domain">${cookie.domain || "unknown"}</div>
+          <div class="detail-name">Cookie: ${cookie.name || "—"}</div>
+          ${reasons.length ? `<div class="detail-tags">${reasons.map(r => `<span class="detail-tag">${r}</span>`).join("")}</div>` : ""}
+        </div>`;
+    }).join("");
+  }
+
+  if (scripts.length > 0) {
+    html += `<div class="detail-name" style="font-size:10px;font-weight:900;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin:${cookieTrackers.length ? "10px" : "0"} 0 4px;">🔍 Tracker Scripts</div>`;
+    html += scripts.map(t => {
+      const domain = t.tracker || t.domain || "";
+      const url    = t.url || "";
+      return `
+        <div class="detail-script">
+          <span>${domain}</span>
+          ${url ? url.replace(domain, "").substring(0, 60) || "/" : ""}
+        </div>`;
+    }).join("");
+  }
+
+  if (!html) {
+    html = `<div class="back-empty">No cookies or tracker scripts detected.</div>`;
+  }
+
+  list.innerHTML = html;
+
+  // Sync card height after DOM update
+  if (typeof window._syncFlipHeight === "function") {
+    requestAnimationFrame(window._syncFlipHeight);
+  }
 }

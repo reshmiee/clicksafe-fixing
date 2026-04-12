@@ -261,6 +261,82 @@
     }
     .footer-brand { font-size: 12px; font-weight: 900; color: var(--green-dark); }
     .footer-ver   { font-size: 10px; color: var(--muted); font-weight: 700; }
+
+    /* FLIP CARD */
+    .flip-section {
+      background: var(--surface);
+      border-bottom: 2px solid var(--border);
+    }
+    .flip-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 16px 0;
+    }
+    .flip-toggle {
+      background: var(--bg);
+      border: 2px solid var(--border);
+      border-radius: var(--r-xs);
+      width: 28px; height: 28px;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      font-size: 14px;
+      transition: border-color 0.2s, background 0.2s;
+      flex-shrink: 0;
+    }
+    .flip-toggle:hover { border-color: var(--purple); background: var(--purple-bg); }
+
+    .flip-scene {
+      perspective: 900px;
+      padding: 12px 16px 14px;
+    }
+    .flip-card {
+      position: relative;
+      transform-style: preserve-3d;
+      /* height set by JS after render */
+      min-height: 60px;
+    }
+    .flip-face {
+      position: absolute; top: 0; left: 0; width: 100%;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+    }
+    .flip-face-back {
+      transform: rotateY(180deg);
+    }
+
+    /* COOKIE / TRACKER ITEMS (back face) */
+    .detail-list { display: flex; flex-direction: column; gap: 7px; }
+    .detail-item {
+      background: var(--bg);
+      border: 2px solid var(--border);
+      border-radius: var(--r-sm);
+      padding: 9px 11px;
+    }
+    .detail-domain {
+      font-size: 11px; font-weight: 900; color: var(--red-dark);
+      margin-bottom: 2px;
+    }
+    .detail-name { font-size: 10px; color: var(--muted); font-weight: 700; }
+    .detail-tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
+    .detail-tag {
+      background: var(--orange-bg); color: #7a4000;
+      border: 1px solid var(--orange);
+      padding: 2px 7px; border-radius: 999px;
+      font-size: 10px; font-weight: 800;
+    }
+    .detail-script {
+      background: var(--bg);
+      border: 2px solid var(--border);
+      border-radius: var(--r-sm);
+      padding: 9px 11px;
+      font-size: 11px; font-weight: 700;
+      color: var(--text-dark);
+      word-break: break-all;
+    }
+    .detail-script span { color: var(--muted); font-weight: 600; font-size: 10px; display: block; margin-bottom: 2px; }
+    .back-empty {
+      text-align: center; padding: 16px 0;
+      font-size: 12px; color: var(--muted); font-weight: 700;
+    }
   </style>
 </head>
 <body>
@@ -317,13 +393,33 @@
 
   <div class="divider"></div>
 
-  <div class="section">
-    <div class="section-label">Who's watching you</div>
-    <div id="company-list">
-      <div class="empty-state">
-        <img src="../assets/graphics/noTrackers.svg" alt="No trackers" />
-        <div class="empty-title">No trackers detected!</div>
-        <div class="empty-sub">This page looks clean 🎉</div>
+  <!-- FLIP CARD SECTION -->
+  <div class="flip-section">
+    <div class="flip-header">
+      <div class="section-label" id="flip-label">Who's watching you</div>
+      <button class="flip-toggle" id="flip-btn" title="See cookies & tracker scripts">⇄</button>
+    </div>
+    <div class="flip-scene">
+      <div class="flip-card" id="flip-card">
+
+        <!-- FRONT: company cards -->
+        <div class="flip-face flip-face-front" id="face-front">
+          <div id="company-list">
+            <div class="empty-state">
+              <img src="../assets/graphics/noTrackers.svg" alt="No trackers" />
+              <div class="empty-title">No trackers detected!</div>
+              <div class="empty-sub">This page looks clean 🎉</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- BACK: cookies & tracker scripts -->
+        <div class="flip-face flip-face-back" id="face-back">
+          <div class="detail-list" id="cookie-script-list">
+            <div class="back-empty">No cookies or scripts detected.</div>
+          </div>
+        </div>
+
       </div>
     </div>
   </div>
@@ -379,6 +475,7 @@
     <span class="footer-ver">v1.4.0</span>
   </div>
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
   <script src="sidepanel.js"></script>
   <script>
     document.getElementById("dashboard-btn")?.addEventListener("click", () => {
@@ -387,6 +484,52 @@
     document.getElementById("settings-btn2")?.addEventListener("click", () => {
       chrome.tabs.create({ url: chrome.runtime.getURL("pages/settings/settings.html") });
     });
+
+    // ── Flip card ──────────────────────────────────────────────
+    let isFlipped = false;
+
+    function syncCardHeight() {
+      const card  = document.getElementById("flip-card");
+      const front = document.getElementById("face-front");
+      const back  = document.getElementById("face-back");
+      if (!card || !front || !back) return;
+      // Make both faces position:relative temporarily to measure
+      front.style.position = "relative";
+      back.style.position  = "relative";
+      const fh = front.offsetHeight;
+      const bh = back.offsetHeight;
+      front.style.position = "";
+      back.style.position  = "";
+      card.style.height = Math.max(fh, bh) + "px";
+    }
+
+    function doFlip() {
+      const card  = document.getElementById("flip-card");
+      const label = document.getElementById("flip-label");
+      const btn   = document.getElementById("flip-btn");
+      if (!card) return;
+
+      isFlipped = !isFlipped;
+      label.textContent = isFlipped ? "Cookies & Tracker Scripts" : "Who's watching you";
+
+      gsap.to(card, {
+        rotateY: isFlipped ? 180 : 0,
+        duration: 0.55,
+        ease: "power3.inOut"
+      });
+
+      // Spin the toggle icon
+      gsap.fromTo(btn,
+        { rotate: 0 },
+        { rotate: 180, duration: 0.4, ease: "back.out(1.5)", clearProps: "rotate" }
+      );
+    }
+
+    document.getElementById("flip-btn")?.addEventListener("click", doFlip);
+
+    // Re-sync height when render updates the DOM
+    const origSyncHeight = window._syncFlipHeight;
+    window._syncFlipHeight = syncCardHeight;
   </script>
 </body>
 </html>
