@@ -247,7 +247,7 @@ function renderCompanyList(companies) {
   if (companies.length === 0) {
     list.innerHTML = `
       <div class="no-trackers">
-        <span class="no-trackers-icon">✓</span>
+        <img class="no-trackers-icon" src="../assets/graphics/noTrackers.svg" alt="" />
         No trackers detected on this page
       </div>`;
     return;
