@@ -6,20 +6,19 @@
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
-      --purple:       #6C47FF;
-      --purple-light: #EDE9FF;
-      --purple-mid:   #9B7EFF;
-      --bg:           #FFFFFF;
-      --bg-soft:      #F7F6FF;
-      --text:         #0A0A0F;
-      --text-muted:   #6B7280;
+      --primary:      #E8DBB3;
+      --primary-dark: #D4C48E;
+      --blue:         #7DAACB;
+      --blue-light:   #D6E8F5;
+      --bg:           #FFFDEB;
+      --bg-soft:      #F5F0D8;
+      --text:         #1A1A14;
+      --text-muted:   #6B6B52;
       --green:        #22C55E;
       --green-light:  #DCFCE7;
-      --red:          #EF4444;
-      --red-light:    #FEE2E2;
-      --amber:        #F59E0B;
-      --amber-light:  #FEF3C7;
-      --border:       #EBEBF0;
+      --red:          #CE2626;
+      --red-light:    #FADDDD;
+      --border:       #DDD8B8;
       --radius:       10px;
       --radius-sm:    7px;
     }
@@ -49,7 +48,7 @@
       z-index: 10;
     }
     .header-brand { display: flex; align-items: center; gap: 8px; }
-    .brand-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--purple); }
+    .brand-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--blue); }
     .brand-name { font-size: 15px; font-weight: 700; color: var(--text); letter-spacing: -0.4px; }
     .header-btn {
       background: var(--bg-soft);
@@ -61,7 +60,7 @@
       display: flex; align-items: center; justify-content: center;
       transition: background 0.15s, color 0.15s;
     }
-    .header-btn:hover { background: var(--purple-light); color: var(--purple); border-color: var(--purple-light); }
+    .header-btn:hover { background: var(--blue-light); color: var(--blue); border-color: var(--blue-light); }
 
     /* Score block */
     .score-block {
@@ -118,10 +117,10 @@
       letter-spacing: -0.2px;
     }
     .btn:active { transform: scale(0.97); }
-    .btn-primary   { background: var(--purple); color: white; }
+    .btn-primary   { background: var(--blue); color: white; }
     .btn-primary:hover { opacity: 0.88; }
-    .btn-secondary { background: var(--bg-soft); color: var(--text); border: 1px solid var(--border); }
-    .btn-secondary:hover { background: var(--purple-light); border-color: var(--purple-light); color: var(--purple); }
+    .btn-secondary { background: var(--primary); color: var(--text); border: 1px solid var(--border); }
+    .btn-secondary:hover { background: var(--primary-dark); border-color: var(--primary-dark); }
 
     .gap { height: 6px; background: var(--bg-soft); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
 
@@ -146,20 +145,20 @@
       transition: border-color 0.15s;
     }
     .company-card:last-child { margin-bottom: 0; }
-    .company-card:hover { border-color: var(--purple-mid); }
+    .company-card:hover { border-color: var(--blue); }
 
     .company-avatar {
       width: 32px; height: 32px;
       border-radius: 8px;
-      background: var(--purple-light);
+      background: var(--blue-light);
       display: flex; align-items: center; justify-content: center;
       font-size: 11px; font-weight: 700;
-      color: var(--purple);
+      color: var(--blue);
       flex-shrink: 0;
       letter-spacing: -0.3px;
     }
-    .company-avatar.t2 { background: var(--amber-light); color: #92400e; }
-    .company-avatar.t3 { background: var(--border);      color: var(--text-muted); }
+    .company-avatar.t2 { background: var(--primary); color: #5a4a1a; }
+    .company-avatar.t3 { background: var(--border);  color: var(--text-muted); }
 
     .company-body { flex: 1; min-width: 0; }
     .company-name { font-size: 13px; font-weight: 600; color: var(--text); letter-spacing: -0.2px; }
@@ -170,9 +169,9 @@
       padding: 3px 8px; border-radius: 999px;
       flex-shrink: 0; letter-spacing: 0.02em;
     }
-    .t1-badge { background: var(--red-light);   color: #dc2626; }
-    .t2-badge { background: var(--amber-light); color: #92400e; }
-    .t3-badge { background: var(--border);      color: var(--text-muted); }
+    .t1-badge { background: var(--red-light);  color: var(--red); }
+    .t2-badge { background: var(--primary);    color: #5a4a1a; }
+    .t3-badge { background: var(--border);     color: var(--text-muted); }
 
     /* Empty state */
     .empty-state {
@@ -194,9 +193,7 @@
       padding: 10px 11px;
     }
     .stat-label { font-size: 10px; color: var(--text-muted); font-weight: 500; margin-bottom: 4px; }
-    .stat-val   { font-size: 22px; font-weight: 700; letter-spacing: -1px; color: var(--purple); }
-    .stat-val.danger { color: var(--red); }
-    .stat-val.warn   { color: var(--amber); }
+    .stat-val   { font-size: 22px; font-weight: 700; letter-spacing: -1px; color: var(--blue); }
 
     /* Session rows */
     .session-row {
@@ -216,7 +213,7 @@
       background: var(--bg-soft);
       border-top: 1px solid var(--border);
     }
-    .footer-brand { font-size: 11px; font-weight: 700; color: var(--purple); letter-spacing: -0.2px; }
+    .footer-brand { font-size: 11px; font-weight: 700; color: var(--blue); letter-spacing: -0.2px; }
     .footer-ver   { font-size: 10px; color: var(--text-muted); }
   </style>
 </head>
@@ -239,7 +236,7 @@
             cx="36" cy="36" r="30"
             stroke-dasharray="188.5"
             stroke-dashoffset="188.5"
-            stroke="#6C47FF"/>
+            stroke="#7DAACB"/>
         </svg>
         <div class="ring-inner">
           <span class="ring-num" id="ring-num">—</span>
