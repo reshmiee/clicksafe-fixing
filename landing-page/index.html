@@ -1,306 +1,1202 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ClickSafe — Browse Boldly. Click Safely.</title>
-  <link rel="stylesheet" href="style.css" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>ClickSafe — Browser Security Extension</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900;1000&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --green:       #58CC02;
+  --green-dk:    #46A302;
+  --green-bg:    #D7FFB8;
+  --green-pale:  #F3FEE7;
+  --purple:      #CE82FF;
+  --purple-dk:   #9C44CC;
+  --purple-bg:   #F1D4FF;
+  --blue:        #1CB0F6;
+  --blue-dk:     #0090D9;
+  --blue-bg:     #DDF4FF;
+  --red:         #FF4B4B;
+  --red-dk:      #EA2B2B;
+  --red-bg:      #FFDFE0;
+  --orange:      #FF9600;
+  --orange-bg:   #FFEAA0;
+  --yellow:      #FFC800;
+  --yellow-dk:   #E6A700;
+  --bg:          #F7F7F7;
+  --surface:     #FFFFFF;
+  --text:        #4B4B4B;
+  --text-dk:     #3C3C3C;
+  --muted:       #AFAFAF;
+  --border:      #E5E5E5;
+  --r:           16px;
+  --r-sm:        12px;
+  --r-xs:        8px;
+  --r-xl:        24px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; font-size: 16px; }
+body { font-family: 'Nunito', sans-serif; background: var(--bg); color: var(--text-dk); line-height: 1.5; -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+a { color: inherit; text-decoration: none; }
+img { max-width: 100%; display: block; }
+button { cursor: pointer; font-family: 'Nunito', sans-serif; }
+
+/* ── NAV ── */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  background: var(--surface);
+  border-bottom: 3px solid var(--border);
+  height: 64px;
+}
+.nav-inner {
+  max-width: 1100px; margin: 0 auto; padding: 0 28px;
+  height: 64px; display: flex; align-items: center; gap: 0;
+}
+.nav-logo { display: flex; align-items: center; gap: 10px; }
+.nav-logo-mark {
+  width: 36px; height: 36px;
+  background: var(--green); border-radius: var(--r-sm);
+  border: 3px solid var(--green-dk);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+  box-shadow: 0 4px 0 var(--green-dk);
+}
+.nav-logo-text { font-size: 18px; font-weight: 900; color: var(--text-dk); letter-spacing: -0.3px; }
+.nav-links { display: flex; align-items: center; gap: 4px; list-style: none; margin-left: 28px; flex: 1; }
+.nav-links a {
+  padding: 7px 14px; font-size: 14px; font-weight: 800;
+  color: var(--muted); border-radius: var(--r-xs);
+  transition: color .15s, background .15s;
+}
+.nav-links a:hover { color: var(--text-dk); background: var(--bg); }
+.nav-cta { margin-left: auto; display: flex; align-items: center; gap: 10px; }
+.btn {
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 10px 20px; font-size: 14px; font-weight: 900;
+  border-radius: var(--r-sm); border: 2px solid transparent;
+  transition: transform 0.1s, box-shadow 0.1s;
+  letter-spacing: -0.2px; white-space: nowrap; cursor: pointer;
+  font-family: 'Nunito', sans-serif;
+}
+.btn:active { transform: translateY(3px) !important; box-shadow: none !important; }
+.btn-ghost {
+  background: var(--surface); color: var(--text-dk);
+  border-color: var(--border);
+  box-shadow: 0 4px 0 var(--border);
+}
+.btn-ghost:hover { border-color: var(--muted); }
+.btn-green {
+  background: var(--green); color: white;
+  border-color: var(--green-dk);
+  box-shadow: 0 4px 0 var(--green-dk);
+}
+.btn-green:hover { background: #4eba00; }
+.btn-purple {
+  background: var(--purple); color: white;
+  border-color: var(--purple-dk);
+  box-shadow: 0 4px 0 var(--purple-dk);
+}
+.btn-purple:hover { background: #bd6df5; }
+.btn-blue {
+  background: var(--blue); color: white;
+  border-color: var(--blue-dk);
+  box-shadow: 0 4px 0 var(--blue-dk);
+}
+.btn-blue:hover { background: #09a0e3; }
+.btn-lg { padding: 15px 28px; font-size: 16px; border-radius: var(--r); box-shadow: 0 6px 0 var(--green-dk); }
+.btn-lg.btn-purple { box-shadow: 0 6px 0 var(--purple-dk); }
+
+/* ── WRAP ── */
+.wrap { max-width: 1100px; margin: 0 auto; padding: 0 28px; }
+
+/* ── HERO ── */
+.hero {
+  min-height: 100vh;
+  padding: 120px 0 80px;
+  background: var(--green);
+  position: relative; overflow: hidden;
+  display: flex; align-items: center;
+}
+/* Dots pattern */
+.hero::before {
+  content: '';
+  position: absolute; inset: 0;
+  background-image: radial-gradient(circle, rgba(255,255,255,.22) 1.5px, transparent 1.5px);
+  background-size: 28px 28px;
+}
+.hero-inner {
+  position: relative; z-index: 2; width: 100%;
+  display: grid; grid-template-columns: 1fr 420px; gap: 64px; align-items: center;
+}
+.hero-eyebrow {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: var(--green-dk); color: white;
+  border: 2px solid var(--green-dk);
+  padding: 5px 14px; border-radius: 999px;
+  font-size: 12px; font-weight: 800; letter-spacing: 0.05em;
+  text-transform: uppercase; margin-bottom: 22px;
+}
+.hero-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--yellow); animation: pulse 1.8s infinite; }
+@keyframes pulse { 0%,100%{ opacity:1; transform:scale(1); } 50%{ opacity:.5; transform:scale(1.5); } }
+
+.hero-h1 {
+  font-size: clamp(2.6rem, 6vw, 4.5rem);
+  font-weight: 900; line-height: 1.05;
+  letter-spacing: -0.03em;
+  color: white;
+  text-shadow: 0 4px 0 var(--green-dk);
+  margin-bottom: 20px;
+}
+.hero-h1 .wave { display: inline-block; animation: wave 2.5s ease-in-out infinite; }
+@keyframes wave { 0%,100%{ transform: rotate(-3deg); } 50%{ transform: rotate(6deg); } }
+.hero-p { font-size: 1.05rem; color: rgba(255,255,255,.85); line-height: 1.75; max-width: 450px; margin-bottom: 36px; font-weight: 600; }
+.hero-badges { display: flex; align-items: center; gap: 9px; flex-wrap: wrap; margin-bottom: 36px; }
+.badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 5px 13px; border-radius: 999px;
+  font-size: 12px; font-weight: 800; border: 2px solid transparent;
+}
+.badge-white { background: white; color: var(--green-dk); border-color: rgba(0,0,0,.08); }
+.badge-dark { background: var(--green-dk); color: rgba(255,255,255,.8); border-color: transparent; }
+.hero-actions { display: flex; gap: 12px; flex-wrap: wrap; }
+.hero-note { margin-top: 18px; font-size: 12px; color: rgba(255,255,255,.55); font-weight: 700; }
+
+/* Hero right: the extension card */
+.ext-card {
+  background: var(--surface);
+  border: 3px solid rgba(0,0,0,.12);
+  border-radius: var(--r-xl);
+  padding: 0;
+  box-shadow: 0 10px 0 rgba(0,0,0,.18), 0 20px 40px rgba(0,0,0,.15);
+  animation: float 6s ease-in-out infinite alternate;
+  overflow: hidden;
+}
+@keyframes float { from{ transform:translateY(0); } to{ transform:translateY(-12px); } }
+
+.ext-topbar {
+  background: var(--green);
+  border-bottom: 3px solid var(--green-dk);
+  padding: 11px 14px;
+  display: flex; align-items: center; gap: 9px;
+}
+.ext-dots { display: flex; gap: 5px; }
+.ext-dots span { width: 10px; height: 10px; border-radius: 50%; border: 2px solid rgba(0,0,0,.15); }
+.ext-dots span:nth-child(1) { background: #FF5F57; }
+.ext-dots span:nth-child(2) { background: #FFBD2E; }
+.ext-dots span:nth-child(3) { background: #28CA42; }
+.ext-brand { font-size: 14px; font-weight: 900; color: white; flex:1; text-align: center; text-shadow: 0 2px 0 var(--green-dk); }
+
+.ext-score-row {
+  background: var(--green);
+  padding: 4px 14px 16px;
+}
+.ext-score-inner {
+  background: white; border: 3px solid var(--green-dk);
+  border-radius: var(--r); padding: 14px;
+  display: flex; align-items: center; gap: 12px;
+}
+.ext-ring { position: relative; width: 64px; height: 64px; flex-shrink: 0; }
+.ext-ring svg { position: absolute; inset:0; transform: rotate(-90deg); width:64px; height:64px; }
+.ext-ring-num {
+  position: absolute; inset:0;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  font-size: 19px; font-weight: 900; color: var(--text-dk);
+}
+.ext-ring-sub { font-size: 9px; color: var(--muted); font-weight: 800; }
+.ext-score-label { font-size: 15px; font-weight: 900; color: var(--text-dk); margin-bottom: 3px; }
+.ext-score-sub { font-size: 11px; color: var(--muted); font-weight: 700; margin-bottom: 7px; }
+.ext-pill {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 4px 10px; border-radius: 999px;
+  font-size: 10px; font-weight: 900;
+  background: var(--green-bg); color: var(--green-dk); border: 2px solid var(--green-dk);
+}
+
+.ext-btns {
+  display: flex; gap: 8px; padding: 11px 14px;
+  border-bottom: 2px solid var(--border);
+}
+.ext-btn {
+  flex:1; padding: 9px; border-radius: var(--r-sm);
+  font-size: 13px; font-weight: 900; cursor: pointer;
+  font-family: 'Nunito', sans-serif;
+  border: 2px solid transparent;
+}
+.ext-btn-purple { background: var(--purple); color: white; border-color: var(--purple-dk); box-shadow: 0 4px 0 var(--purple-dk); }
+.ext-btn-ghost { background: white; color: var(--text-dk); border-color: var(--border); box-shadow: 0 4px 0 var(--border); }
+
+.ext-section { padding: 12px 14px; border-bottom: 2px solid var(--border); }
+.ext-section-label { font-size: 10px; font-weight: 900; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 10px; }
+
+.ext-tracker {
+  display: flex; align-items: center; gap: 9px;
+  padding: 8px 10px;
+  background: var(--bg); border: 2px solid var(--border);
+  border-radius: var(--r-xs); margin-bottom: 6px;
+}
+.ext-tracker:last-child { margin-bottom: 0; }
+.ext-tracker-av { width: 30px; height: 30px; border-radius: 8px; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:900; flex-shrink:0; border: 2px solid transparent; }
+.av-red { background:var(--red-bg); color:var(--red-dk); border-color:var(--red-dk); }
+.av-orange { background:var(--orange-bg); color:var(--orange); border-color:var(--orange); }
+.av-yellow { background:var(--yellow); color:#7a5f00; border-color:#c49800; }
+.ext-tracker-name { font-size: 12px; font-weight: 800; color: var(--text-dk); flex:1; }
+.ext-t-badge { font-size: 10px; font-weight: 900; padding: 3px 8px; border-radius: 999px; border: 2px solid transparent; }
+.ext-t-red { background: var(--red-dk); color: white; border-color: var(--red-dk); }
+.ext-t-orange { background: var(--orange-bg); color: var(--orange); border-color: var(--orange); }
+.ext-t-yellow { background: var(--yellow); color: #7a5f00; border-color: #c49800; }
+
+.ext-stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; }
+.ext-stat { background: var(--bg); border: 2px solid var(--border); border-radius: var(--r-xs); padding: 9px 10px; }
+.ext-stat-label { font-size: 9px; font-weight: 900; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 3px; }
+.ext-stat-val { font-size: 22px; font-weight: 900; color: var(--purple); letter-spacing: -1px; }
+
+/* ── STREAK BAR ── */
+.streak-section {
+  background: var(--surface); border-bottom: 3px solid var(--border);
+  padding: 18px 0;
+}
+.streak-inner { display: flex; align-items: center; gap: 24px; }
+.streak-label { font-size: 13px; font-weight: 900; color: var(--muted); white-space: nowrap; }
+.streak-track { display: flex; gap: 5px; flex:1; }
+.streak-seg { flex:1; height: 9px; border-radius: 999px; background: var(--border); }
+.streak-seg.done { background: var(--green); }
+.streak-seg.active { background: var(--yellow); }
+.streak-stat { font-size: 13px; font-weight: 900; color: var(--text-dk); white-space: nowrap; }
+.streak-stat span { color: var(--orange); }
+
+/* ── FEATURES ── */
+.features-section { padding: 100px 0; background: var(--surface); border-top: 3px solid var(--border); }
+.section-eyebrow {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: var(--purple-bg); color: var(--purple-dk);
+  border: 2px solid var(--purple-dk); padding: 5px 14px; border-radius: 999px;
+  font-size: 12px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.05em;
+  margin-bottom: 16px;
+}
+.section-eyebrow.green-ey { background: var(--green-bg); color: var(--green-dk); border-color: var(--green-dk); }
+.section-eyebrow.blue-ey { background: var(--blue-bg); color: var(--blue-dk); border-color: var(--blue-dk); }
+.section-eyebrow.yellow-ey { background: var(--yellow); color: #7a5f00; border-color: #c49800; }
+.h2 { font-size: clamp(2rem, 4.5vw, 3.25rem); font-weight: 900; line-height: 1.08; letter-spacing: -0.03em; color: var(--text-dk); margin-bottom: 14px; }
+.h2 .hl { color: var(--purple-dk); }
+.h2 .hl-green { color: var(--green-dk); }
+.h2 .hl-blue { color: var(--blue-dk); }
+.hsub { font-size: 1.0rem; color: var(--muted); line-height: 1.75; max-width: 500px; font-weight: 700; }
+
+.feat-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; margin-top: 56px; }
+.feat-card {
+  background: var(--surface);
+  border: 3px solid var(--border);
+  border-radius: var(--r-xl);
+  padding: 28px 24px;
+  box-shadow: 0 6px 0 var(--border);
+  transition: transform .15s, box-shadow .15s;
+  position: relative; overflow: hidden;
+}
+.feat-card:hover { transform: translateY(-4px); box-shadow: 0 10px 0 var(--border); }
+.feat-card:active { transform: translateY(4px); box-shadow: 0 2px 0 var(--border); }
+.feat-num {
+  position: absolute; top: 16px; right: 20px;
+  font-size: 3.5rem; font-weight: 900; color: var(--border);
+  line-height: 1; user-select: none; letter-spacing: -2px;
+}
+.feat-icon {
+  width: 52px; height: 52px; border-radius: var(--r-sm);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 24px; margin-bottom: 18px;
+  border: 3px solid transparent;
+  box-shadow: 0 4px 0 rgba(0,0,0,.08);
+}
+.fi-green { background: var(--green-bg); border-color: var(--green-dk); }
+.fi-yellow { background: var(--orange-bg); border-color: var(--orange); }
+.fi-blue { background: var(--blue-bg); border-color: var(--blue-dk); }
+.fi-red { background: var(--red-bg); border-color: var(--red-dk); }
+.fi-orange { background: var(--orange-bg); border-color: var(--orange); }
+.fi-purple { background: var(--purple-bg); border-color: var(--purple-dk); }
+.feat-title { font-size: 17px; font-weight: 900; color: var(--text-dk); margin-bottom: 8px; letter-spacing: -0.2px; }
+.feat-desc { font-size: 13.5px; color: var(--muted); line-height: 1.7; margin-bottom: 18px; font-weight: 700; }
+.feat-chip {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 5px 12px; border-radius: 999px;
+  font-size: 11px; font-weight: 900; border: 2px solid transparent;
+}
+.chip-green { background: var(--green-bg); color: var(--green-dk); border-color: var(--green-dk); }
+.chip-yellow { background: var(--orange-bg); color: var(--orange); border-color: var(--orange); }
+.chip-blue { background: var(--blue-bg); color: var(--blue-dk); border-color: var(--blue-dk); }
+.chip-red { background: var(--red-bg); color: var(--red-dk); border-color: var(--red-dk); }
+.chip-orange { background: var(--orange-bg); color: #c25900; border-color: var(--orange); }
+.chip-purple { background: var(--purple-bg); color: var(--purple-dk); border-color: var(--purple-dk); }
+
+.feat-demo { margin-top: 18px; padding-top: 16px; border-top: 2px solid var(--border); }
+
+/* toggles */
+.toggle-list { display: flex; flex-direction: column; gap: 7px; }
+.toggle-item {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 9px 12px; border-radius: var(--r-xs);
+  background: var(--bg); border: 2px solid var(--border);
+}
+.toggle-label { font-size: 12px; font-weight: 800; color: var(--text-dk); }
+.toggle-sub { font-size: 10px; color: var(--muted); font-weight: 700; margin-top: 1px; }
+.toggle-sw { width: 36px; height: 20px; border-radius: 999px; position: relative; flex-shrink:0; border: 2px solid transparent; }
+.toggle-sw.on { background: var(--green); border-color: var(--green-dk); }
+.toggle-sw.off { background: var(--border); border-color: var(--muted); }
+.toggle-sw::after { content:''; position:absolute; width:14px; height:14px; border-radius:50%; background:white; top:1px; transition:.18s; box-shadow:0 2px 4px rgba(0,0,0,.2); }
+.toggle-sw.on::after { left:18px; }
+.toggle-sw.off::after { left:1px; }
+
+/* tracker list mini */
+.tracker-list { display: flex; flex-direction: column; gap: 6px; }
+.tracker-item {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 10px; border-radius: var(--r-xs);
+  background: var(--bg); border: 2px solid var(--border);
+}
+.tracker-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink:0; }
+.tracker-name { font-size: 12px; font-weight: 800; color: var(--text-dk); flex:1; }
+.tracker-tier {
+  font-size: 10px; font-weight: 900;
+  padding: 3px 8px; border-radius: 999px; border: 2px solid transparent;
+}
+.tier-r { background: var(--red-dk); color: white; border-color: var(--red-dk); }
+.tier-o { background: var(--orange-bg); color: var(--orange); border-color: var(--orange); }
+.tier-y { background: var(--yellow); color: #7a5f00; border-color: #c49800; }
+
+/* ── HOW IT WORKS ── */
+.how-section { padding: 100px 0; background: var(--bg); border-top: 3px solid var(--border); }
+.how-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: start; margin-top: 56px; }
+
+.tier-diagram { display: flex; flex-direction: column; gap: 0; }
+.tier-block {
+  background: var(--surface);
+  border: 3px solid var(--border);
+  padding: 22px 24px;
+  box-shadow: 0 5px 0 var(--border);
+  position: relative;
+}
+.tier-block:first-child { border-radius: var(--r) var(--r) 0 0; }
+.tier-block:not(:first-child):not(:last-child) { border-top: none; border-radius: 0; }
+.tier-block:last-child { border-top: none; border-radius: 0 0 var(--r) var(--r); }
+.tier-num {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 24px; height: 24px; border-radius: 50%;
+  font-size: 11px; font-weight: 900; color: white; margin-bottom: 8px;
+  border: 2px solid transparent;
+}
+.tn-green { background: var(--green); border-color: var(--green-dk); }
+.tn-blue { background: var(--blue); border-color: var(--blue-dk); }
+.tn-purple { background: var(--purple); border-color: var(--purple-dk); }
+.tier-label { font-size: 10px; font-weight: 900; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 5px; }
+.tier-title { font-size: 15px; font-weight: 900; color: var(--text-dk); margin-bottom: 5px; }
+.tier-desc { font-size: 13px; color: var(--muted); line-height: 1.65; font-weight: 700; }
+.tier-arrow {
+  text-align: center; padding: 8px 0;
+  font-size: 12px; font-weight: 900; color: var(--muted);
+  background: var(--bg);
+  border-left: 3px solid var(--border); border-right: 3px solid var(--border);
+}
+
+.how-points { display: flex; flex-direction: column; gap: 22px; }
+.how-point {
+  display: flex; gap: 14px;
+  background: var(--surface); border: 3px solid var(--border);
+  border-radius: var(--r); padding: 18px;
+  box-shadow: 0 5px 0 var(--border);
+  transition: transform .15s;
+}
+.how-point:hover { transform: translateY(-2px); }
+.how-point-icon {
+  width: 44px; height: 44px; border-radius: var(--r-sm);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px; flex-shrink: 0;
+  border: 3px solid var(--border);
+  background: var(--bg);
+}
+.how-point-title { font-size: 15px; font-weight: 900; color: var(--text-dk); margin-bottom: 4px; }
+.how-point-desc { font-size: 13px; color: var(--muted); line-height: 1.65; font-weight: 700; }
+code { font-family: monospace; font-size: 12px; background: var(--bg); padding: 1px 5px; border-radius: 5px; border: 2px solid var(--border); color: var(--text-dk); }
+
+/* ── PRIVACY SECTION ── */
+.privacy-section {
+  padding: 100px 0;
+  background: var(--purple);
+  border-top: 3px solid var(--border);
+  position: relative; overflow: hidden;
+}
+.privacy-section::before {
+  content: '';
+  position: absolute; inset: 0;
+  background-image: radial-gradient(circle, rgba(255,255,255,.2) 1.5px, transparent 1.5px);
+  background-size: 28px 28px;
+}
+.privacy-inner { position: relative; z-index:2; display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; }
+.privacy-text .h2 { color: white; text-shadow: 0 4px 0 var(--purple-dk); }
+.privacy-text .h2 .hl { color: var(--yellow); }
+.privacy-text .hsub { color: rgba(255,255,255,.75); }
+.privacy-list { margin-top: 32px; display: flex; flex-direction: column; gap: 12px; }
+.privacy-item {
+  display: flex; gap: 12px; align-items: flex-start;
+  background: rgba(255,255,255,.15); border: 2px solid rgba(255,255,255,.3);
+  border-radius: var(--r-sm); padding: 12px 14px;
+}
+.privacy-check {
+  width: 26px; height: 26px; border-radius: 50%;
+  background: var(--green); border: 2px solid var(--green-dk);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; flex-shrink: 0;
+  box-shadow: 0 3px 0 var(--green-dk);
+}
+.privacy-item-text { font-size: 13.5px; color: rgba(255,255,255,.85); line-height: 1.6; font-weight: 700; }
+.privacy-item-text strong { color: white; }
+
+.privacy-card {
+  background: var(--surface);
+  border: 3px solid rgba(0,0,0,.1);
+  border-radius: var(--r-xl);
+  padding: 24px;
+  box-shadow: 0 10px 0 rgba(0,0,0,.12);
+}
+.privacy-card-label { font-size: 11px; font-weight: 900; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 18px; }
+.score-bar-list { display: flex; flex-direction: column; gap: 11px; }
+.sbar-row { display: flex; align-items: center; gap: 10px; }
+.sbar-label { font-size: 12px; color: var(--muted); font-weight: 800; min-width: 96px; }
+.sbar-track { flex:1; height: 8px; background: var(--border); border-radius: 999px; overflow:hidden; border: 2px solid var(--border); }
+.sbar-fill { height: 100%; border-radius: 999px; transition: width 1.2s cubic-bezier(.4,0,.2,1); }
+.sbar-val { font-size: 12px; font-weight: 900; min-width: 30px; text-align: right; }
+
+.formula-box {
+  margin-top: 20px; background: var(--bg); border: 2px solid var(--border);
+  border-radius: var(--r-sm); padding: 14px;
+}
+.formula-title { font-size: 11px; font-weight: 900; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; }
+.formula-code { font-family: monospace; font-size: 12px; color: var(--text); line-height: 2.0; }
+.formula-code .hl-p { color: var(--purple-dk); font-weight: 900; }
+.formula-code .hl-g { color: var(--green-dk); font-weight: 900; }
+
+/* ── BROWSERS ── */
+.browsers-section { padding: 80px 0; background: var(--surface); border-top: 3px solid var(--border); }
+.browsers-inner { display: flex; align-items: center; justify-content: space-between; gap: 60px; flex-wrap: wrap; }
+.browsers-left { max-width: 420px; }
+.browsers-logos { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 24px; }
+.browser-logo {
+  width: 52px; height: 52px; border-radius: var(--r-sm);
+  background: var(--bg); border: 3px solid var(--border);
+  display: flex; align-items: center; justify-content: center; font-size: 26px;
+  box-shadow: 0 4px 0 var(--border);
+  transition: transform .15s, box-shadow .15s;
+}
+.browser-logo:hover { transform: translateY(-3px); box-shadow: 0 7px 0 var(--border); }
+.browser-logo:active { transform: translateY(3px); box-shadow: 0 1px 0 var(--border); }
+.browsers-right { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; flex:1; max-width: 420px; }
+.browsers-stat {
+  background: var(--bg); border: 3px solid var(--border);
+  border-radius: var(--r); padding: 20px;
+  box-shadow: 0 5px 0 var(--border);
+}
+.browsers-stat-n { font-size: 2.4rem; font-weight: 900; letter-spacing: -2px; color: var(--purple); line-height:1; margin-bottom: 5px; }
+.browsers-stat-l { font-size: 11px; font-weight: 900; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; }
+
+/* ── INSTALL ── */
+.install-section { padding: 100px 0; background: var(--blue); border-top: 3px solid var(--border); position:relative; overflow:hidden; }
+.install-section::before {
+  content: '';
+  position: absolute; inset: 0;
+  background-image: radial-gradient(circle, rgba(255,255,255,.2) 1.5px, transparent 1.5px);
+  background-size: 28px 28px;
+}
+.install-inner { position: relative; z-index:2; }
+.install-section .section-intro { text-align: center; max-width: 520px; margin: 0 auto 56px; }
+.install-section .h2 { color: white; text-shadow: 0 4px 0 var(--blue-dk); }
+.install-section .h2 .hl { color: var(--yellow); }
+.install-section .hsub { color: rgba(255,255,255,.75); margin: 0 auto; }
+.install-steps { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; }
+.install-step {
+  background: var(--surface);
+  border: 3px solid rgba(0,0,0,.1);
+  border-radius: var(--r-xl); padding: 28px 24px;
+  box-shadow: 0 8px 0 rgba(0,0,0,.12);
+}
+.install-step-n {
+  width: 48px; height: 48px; border-radius: 50%;
+  background: var(--blue); color: white;
+  border: 3px solid var(--blue-dk);
+  box-shadow: 0 4px 0 var(--blue-dk);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px; font-weight: 900;
+  margin-bottom: 18px;
+}
+.install-step-title { font-size: 16px; font-weight: 900; color: var(--text-dk); margin-bottom: 8px; }
+.install-step-desc { font-size: 13px; color: var(--muted); line-height: 1.7; font-weight: 700; }
+.install-code {
+  margin-top: 12px; font-family: monospace; font-size: 12px;
+  background: var(--bg); border: 2px solid var(--border);
+  border-radius: var(--r-xs); padding: 9px 12px; color: var(--text);
+}
+
+/* ── FAQ ── */
+.faq-section { padding: 100px 0; background: var(--surface); border-top: 3px solid var(--border); }
+.faq-inner { display: grid; grid-template-columns: 1fr 1.4fr; gap: 80px; }
+.faq-list { display: flex; flex-direction: column; gap: 10px; }
+.faq-item {
+  background: var(--bg); border: 3px solid var(--border);
+  border-radius: var(--r); overflow: hidden;
+  box-shadow: 0 4px 0 var(--border);
+  transition: box-shadow .15s;
+}
+.faq-item.open { border-color: var(--purple); box-shadow: 0 4px 0 var(--purple-dk); }
+.faq-q {
+  width: 100%; background: none; border: none; padding: 16px 18px;
+  cursor: pointer; display: flex; justify-content: space-between; align-items: center;
+  gap: 12px; font-size: 14px; font-weight: 900; color: var(--text-dk);
+  text-align: left;
+}
+.faq-arr {
+  width: 28px; height: 28px; border-radius: 50%; flex-shrink: 0;
+  background: var(--border); border: 2px solid var(--border);
+  display: flex; align-items: center; justify-content: center; font-size: 14px;
+  transition: all .2s; box-shadow: 0 3px 0 var(--border);
+}
+.faq-item.open .faq-arr { background: var(--purple); border-color: var(--purple-dk); box-shadow: 0 3px 0 var(--purple-dk); transform: rotate(180deg); }
+.faq-a { max-height: 0; overflow: hidden; transition: max-height .35s ease; }
+.faq-a.open { max-height: 300px; }
+.faq-a-inner { padding: 0 18px 16px; font-size: 13.5px; color: var(--muted); line-height: 1.75; font-weight: 700; }
+
+/* ── CTA ── */
+.cta-section {
+  padding: 100px 0;
+  background: var(--green);
+  border-top: 3px solid var(--green-dk);
+  position: relative; overflow: hidden;
+}
+.cta-section::before {
+  content:'';
+  position: absolute; inset: 0;
+  background-image: radial-gradient(circle, rgba(255,255,255,.22) 1.5px, transparent 1.5px);
+  background-size: 28px 28px;
+}
+.cta-inner { position: relative; z-index:2; text-align: center; max-width: 560px; margin: 0 auto; }
+.cta-h { font-size: clamp(2.25rem,5vw,3.75rem); font-weight: 900; line-height: 1.06; color: white; text-shadow: 0 5px 0 var(--green-dk); letter-spacing: -0.03em; margin-bottom: 16px; }
+.cta-h .hl { color: var(--yellow); }
+.cta-sub { font-size: 1.05rem; color: rgba(255,255,255,.8); line-height: 1.75; margin-bottom: 40px; font-weight: 700; }
+.cta-meta { margin-top: 24px; font-size: 12px; color: rgba(255,255,255,.5); font-weight: 800; }
+
+/* ── FOOTER ── */
+footer {
+  background: var(--text-dk); color: rgba(255,255,255,.45);
+  padding: 56px 0 0;
+  border-top: 3px solid rgba(255,255,255,.08);
+}
+.footer-top { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 40px; padding-bottom: 44px; border-bottom: 2px solid rgba(255,255,255,.08); }
+.footer-brand { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+.footer-brand-mark {
+  width: 34px; height: 34px; background: var(--green); border-radius: var(--r-sm);
+  border: 2px solid var(--green-dk); display: flex; align-items: center; justify-content: center;
+  font-size: 18px; box-shadow: 0 3px 0 var(--green-dk);
+}
+.footer-brand-text { font-size: 17px; font-weight: 900; color: white; }
+.footer-desc { font-size: 13px; line-height: 1.7; margin-bottom: 14px; font-weight: 700; }
+.footer-chips { display: flex; gap: 6px; flex-wrap: wrap; }
+.footer-chip { font-size: 10px; font-weight: 900; padding: 3px 9px; border-radius: 999px; background: rgba(255,255,255,.07); color: rgba(255,255,255,.3); border: 1.5px solid rgba(255,255,255,.1); }
+.footer-col-title { font-size: 11px; font-weight: 900; color: rgba(255,255,255,.25); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 14px; }
+.footer-links { list-style: none; display: flex; flex-direction: column; gap: 9px; }
+.footer-links a { font-size: 13.5px; color: rgba(255,255,255,.4); font-weight: 700; transition: color .15s; }
+.footer-links a:hover { color: white; }
+.footer-bottom { display: flex; align-items: center; justify-content: space-between; padding: 18px 0; font-size: 11px; color: rgba(255,255,255,.2); font-weight: 800; flex-wrap: wrap; gap: 8px; }
+.version-chip { font-size: 10px; padding: 3px 10px; border-radius: 999px; background: rgba(88,204,2,.15); color: var(--green); border: 2px solid var(--green-dk); font-weight: 900; }
+
+/* ── FADE IN ── */
+.fi { opacity:0; transform:translateY(22px); transition: opacity .5s ease, transform .5s ease; }
+.fi.in { opacity:1; transform:none; }
+.d1{transition-delay:.1s;} .d2{transition-delay:.2s;} .d3{transition-delay:.3s;}
+
+/* ── RESPONSIVE ── */
+@media(max-width:960px){
+  .hero-inner,.how-grid,.privacy-inner,.faq-inner{grid-template-columns:1fr!important;}
+  .ext-card{display:none;}
+  .feat-grid{grid-template-columns:1fr 1fr!important;}
+  .install-steps{grid-template-columns:1fr!important;}
+  .browsers-inner{flex-direction:column;}
+  .browsers-right{max-width:100%;width:100%;}
+  .footer-top{grid-template-columns:1fr 1fr;}
+}
+@media(max-width:640px){
+  .wrap{padding:0 18px;}
+  .nav-links,.nav-cta{display:none;}
+  .feat-grid{grid-template-columns:1fr!important;}
+  .browsers-right{grid-template-columns:1fr 1fr;}
+}
+</style>
 </head>
 <body>
 
-  <nav class="navbar">
-    <div class="nav-container">
-      <div class="nav-logo">
-        <div class="logo-icon">
-          <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
-            <path d="M14 2L4 7v8c0 5.5 4.3 10.7 10 12 5.7-1.3 10-6.5 10-12V7L14 2z" fill="#1a7a4a" opacity="0.2"/>
-            <path d="M14 2L4 7v8c0 5.5 4.3 10.7 10 12 5.7-1.3 10-6.5 10-12V7L14 2z" stroke="#1a7a4a" stroke-width="1.5" fill="none"/>
-            <path d="M10 14l3 3 5-5" stroke="#1a7a4a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </div>
-        <span class="logo-text">ClickSafe</span>
-      </div>
-      <ul class="nav-links">
-        <li><a href="#features">Features</a></li>
-        <li><a href="#safety-check">Safety Check</a></li>
-        <li><a href="#how-it-works">How it Works</a></li>
-        <li><a href="#pricing">Pricing <span class="free-badge">Free</span></a></li>
-      </ul>
-      <a href="#" class="btn-primary nav-cta">Add to Chrome</a>
-      <button class="mobile-menu-btn" id="mobileMenuBtn">
-        <span></span><span></span><span></span>
-      </button>
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <a href="#" class="nav-logo">
+      <div class="nav-logo-mark">🛡️</div>
+      <span class="nav-logo-text">ClickSafe</span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="#features">Features</a></li>
+      <li><a href="#how">How it Works</a></li>
+      <li><a href="#browsers">Browsers</a></li>
+      <li><a href="#faq">FAQ</a></li>
+    </ul>
+    <div class="nav-cta">
+      <a href="https://github.com" class="btn btn-ghost" style="padding:8px 16px;font-size:13px;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+        GitHub
+      </a>
+      <a href="#install" class="btn btn-green" style="padding:8px 18px;font-size:13px;">Install Extension</a>
     </div>
-  </nav>
+  </div>
+</nav>
 
-  <section class="hero">
-    <div class="hero-bg-grid"></div>
-    <div class="container hero-flex">
-      <div class="hero-content">
-        <div class="hero-badge">
-          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1L2 3.5v4c0 2.75 2.15 5.35 5 6 2.85-.65 5-3.25 5-6v-4L7 1z" fill="#1a7a4a"/></svg>
-          Trusted by 10,000+ users
+<!-- HERO -->
+<section class="hero" id="home">
+  <div class="wrap">
+    <div class="hero-inner">
+      <div>
+        <div class="hero-eyebrow fi">
+          <span class="hero-dot"></span>
+          Browser Security Extension · v1.3.0
         </div>
-        <h1 class="hero-title">Browse Boldly.<br><span class="accent-text">Click Safely.</span></h1>
-        <p class="hero-subtitle">ClickSafe tells you if a site is safe or tracking cookies, in real-time. Instantly identify malicious links and regain control of your digital footprint.</p>
-        <div class="hero-actions">
-          <a href="#" class="btn-primary btn-large">
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 1.5L3 5v6c0 4.1 3.2 8 7 9 3.8-1 7-4.9 7-9V5L10 1.5z" fill="white" opacity="0.9"/><path d="M7 10l2.5 2.5 3.5-4" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            Add to Chrome — It's Free
+        <h1 class="hero-h1 fi d1">Browse the web<br/>with <span class="wave">👀</span> eyes<br/>wide open.</h1>
+        <p class="hero-p fi d2">ClickSafe is an open-source Chromium extension with six real-time security features: HTTPS enforcement, tracker detection against 70k+ domains, link safety, download scanning, dark pattern detection, and a live privacy banner.</p>
+        <div class="hero-badges fi d2">
+          <span class="badge badge-white">✓ Open Source (MIT)</span>
+          <span class="badge badge-white">✓ Manifest V3</span>
+          <span class="badge badge-dark">Chromium Only</span>
+          <span class="badge badge-dark">Self-hosted backend</span>
+        </div>
+        <div class="hero-actions fi d3">
+          <a href="#install" class="btn btn-ghost btn-lg" style="background:white;color:var(--green-dk);border-color:var(--green-dk);box-shadow:0 6px 0 var(--green-dk);">
+            🛡️ Install ClickSafe
           </a>
-          <a href="#how-it-works" class="btn-ghost">
-            See how it works
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </a>
+          <a href="#features" class="btn btn-ghost btn-lg" style="background:rgba(255,255,255,.2);color:white;border-color:rgba(255,255,255,.35);box-shadow:0 6px 0 rgba(0,0,0,.12);">See All Features</a>
         </div>
-        <div class="hero-stats">
-          <div class="stat"><strong>85/100</strong><span>Avg Safety Score</span></div>
-          <div class="stat-divider"></div>
-          <div class="stat"><strong>12+</strong><span>Trackers Blocked</span></div>
-          <div class="stat-divider"></div>
-          <div class="stat"><strong>Real-time</strong><span>Link Scanning</span></div>
-        </div>
+        <p class="hero-note fi d3">Requires Node.js backend for link &amp; download checks &nbsp;·&nbsp; All analysis runs locally in your browser</p>
       </div>
 
-      <div class="hero-mockup">
-        <div class="browser-frame">
-          <div class="browser-chrome">
-            <div class="browser-dots">
-              <span class="dot dot-red"></span>
-              <span class="dot dot-yellow"></span>
-              <span class="dot dot-green"></span>
+      <!-- Extension card -->
+      <div class="ext-card fi d2">
+        <div class="ext-topbar">
+          <div class="ext-dots"><span></span><span></span><span></span></div>
+          <span class="ext-brand">🛡️ ClickSafe</span>
+          <div style="width:28px;height:28px;background:white;border:2px solid var(--green-dk);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;box-shadow:0 3px 0 var(--green-dk);">⚙️</div>
+        </div>
+        <div class="ext-score-row">
+          <div class="ext-score-inner">
+            <div class="ext-ring">
+              <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="32" cy="32" r="26" stroke="var(--border)" stroke-width="6"/>
+                <circle cx="32" cy="32" r="26" stroke="var(--green)" stroke-width="6" stroke-dasharray="163.4" stroke-dashoffset="24.5" stroke-linecap="round"/>
+              </svg>
+              <div class="ext-ring-num">85<div class="ext-ring-sub">/100</div></div>
             </div>
-            <div class="browser-tab active-tab">ClickSafe</div>
-          </div>
-          <div class="browser-bar">
-            <span class="url-lock">🔒</span>
-            <span class="url-text">example.com</span>
-          </div>
-          <div class="browser-body">
-            <div class="site-preview">
-              <div class="site-header-bar"></div>
-              <div class="site-content-lines">
-                <div class="line l1"></div>
-                <div class="line l2"></div>
-                <div class="line l3"></div>
-              </div>
-            </div>
-            <div class="clicksafe-popup">
-              <div class="popup-header">
-                <div class="popup-logo">
-                  <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M8 1L2 4v5c0 3.1 2.4 6 6 7 3.6-.9 6-3.9 6-7V4L8 1z" stroke="#1a7a4a" stroke-width="1.2" fill="none"/><path d="M5.5 8l2 2 3-3.5" stroke="#1a7a4a" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                  ClickSafe
-                </div>
-                <span class="popup-settings">⚙</span>
-              </div>
-              <div class="popup-site">Website: [example.com]</div>
-              <div class="popup-status-safe">
-                <span class="green-dot"></span> Safe
-              </div>
-              <div class="popup-row">
-                <span class="popup-label">Overall Safety Score:</span>
-                <span class="popup-score">85/100</span>
-              </div>
-              <div class="popup-row">
-                <span class="popup-label">Cookies Detected: 4</span>
-                <span class="popup-link">View Details</span>
-              </div>
-              <div class="popup-row">
-                <span class="popup-label">Third-Party Trackers: Blocked 12</span>
-              </div>
+            <div>
+              <div class="ext-score-label">Good 🎉</div>
+              <div class="ext-score-sub">HTTPS ✓ · 2 trackers · 0 mixed</div>
+              <span class="ext-pill">🔒 Encrypted</span>
             </div>
           </div>
         </div>
-        <div class="mockup-glow"></div>
-      </div>
-    </div>
-  </section>
-
-  <section class="features" id="features">
-    <div class="container">
-      <div class="features-header">
-        <div class="section-label-bar"></div>
-        <span class="section-label-text">Features</span>
-      </div>
-      <div class="features-grid">
-        <div class="feature-card">
-          <div class="feature-icon icon-blue">
-            <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><circle cx="11" cy="11" r="8" stroke="#2563eb" stroke-width="1.5"/><circle cx="11" cy="11" r="3" fill="#2563eb"/><path d="M11 3v2M11 17v2M3 11h2M17 11h2" stroke="#2563eb" stroke-width="1.5" stroke-linecap="round"/></svg>
+        <div class="ext-btns">
+          <button class="ext-btn ext-btn-purple">Dashboard</button>
+          <button class="ext-btn ext-btn-ghost">Settings</button>
+        </div>
+        <div style="height:8px;background:var(--bg);"></div>
+        <div class="ext-section">
+          <div class="ext-section-label">Who's watching you</div>
+          <div class="ext-tracker">
+            <div class="ext-tracker-av av-red">DC</div>
+            <span class="ext-tracker-name">doubleclick.net</span>
+            <span class="ext-t-badge ext-t-red">High Risk</span>
           </div>
-          <div>
-            <h3>Cookie Transparency</h3>
-            <p>See which cookies sites are dropping before you browse.</p>
+          <div class="ext-tracker">
+            <div class="ext-tracker-av av-orange">CR</div>
+            <span class="ext-tracker-name">criteo.com</span>
+            <span class="ext-t-badge ext-t-orange">Ad Network</span>
+          </div>
+          <div class="ext-tracker">
+            <div class="ext-tracker-av av-yellow">HJ</div>
+            <span class="ext-tracker-name">hotjar.com</span>
+            <span class="ext-t-badge ext-t-yellow">Analytics</span>
           </div>
         </div>
-        <div class="feature-card">
-          <div class="feature-icon icon-green">
-            <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M11 2L3 5.5v7c0 4.1 3.4 7.9 8 9 4.6-1.1 8-4.9 8-9v-7L11 2z" stroke="#16a34a" stroke-width="1.5" fill="none"/><path d="M8 11l2 2 4-4" stroke="#16a34a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </div>
-          <div>
-            <h3>Real-time Safety Rating</h3>
-            <p>Instantly know a site's security score and malicious risks.</p>
-          </div>
-        </div>
-        <div class="feature-card">
-          <div class="feature-icon icon-orange">
-            <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M11 4l1.5 5h5l-4 3 1.5 5L11 14l-4 3 1.5-5-4-3h5L11 4z" stroke="#ea580c" stroke-width="1.5" stroke-linejoin="round" fill="none"/></svg>
-          </div>
-          <div>
-            <h3>Phishing Protection</h3>
-            <p>Instant alerts if a site mimics login pages or scams.</p>
+        <div style="height:8px;background:var(--bg);"></div>
+        <div class="ext-section">
+          <div class="ext-section-label">This page</div>
+          <div class="ext-stat-grid">
+            <div class="ext-stat"><div class="ext-stat-label">Companies</div><div class="ext-stat-val">3</div></div>
+            <div class="ext-stat"><div class="ext-stat-label">Tracker scripts</div><div class="ext-stat-val">5</div></div>
+            <div class="ext-stat"><div class="ext-stat-label">Track. cookies</div><div class="ext-stat-val">2</div></div>
+            <div class="ext-stat"><div class="ext-stat-label">Mixed content</div><div class="ext-stat-val">0</div></div>
           </div>
         </div>
-        <div class="feature-card">
-          <div class="feature-icon icon-teal">
-            <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect x="4" y="8" width="14" height="10" rx="2" stroke="#0d9488" stroke-width="1.5"/><path d="M8 8V6a3 3 0 016 0v2" stroke="#0d9488" stroke-width="1.5" stroke-linecap="round"/></svg>
-          </div>
-          <div>
-            <h3>Anti-Tracker Blocking</h3>
-            <p>Stop hidden scripts from tracking your online activity.</p>
-          </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--surface);border-top:2px solid var(--border);">
+          <span style="font-size:12px;font-weight:900;color:var(--green-dk);">ClickSafe</span>
+          <span style="font-size:10px;font-weight:800;color:var(--muted);">v1.3.0</span>
         </div>
       </div>
     </div>
-  </section>
+  </div>
+</section>
 
-  <section class="safety-check-section" id="safety-check">
-    <div class="container">
-      <div class="sc-inner">
-        <div class="sc-text">
-          <div class="section-label-text">Safety Check</div>
-          <h2>Test Any URL Instantly</h2>
-          <p>Paste any link below and we'll check it against our real-time safety database — no extension needed.</p>
-          <ul class="sc-list">
-            <li><span class="check-icon">✓</span> Google Safe Browsing integration</li>
-            <li><span class="check-icon">✓</span> Phishing &amp; malware detection</li>
-            <li><span class="check-icon">✓</span> Instant results in milliseconds</li>
-          </ul>
-        </div>
-        <div class="sc-widget">
-          <h3>Check a Link</h3>
-          <div class="url-input-group">
-            <input type="url" id="urlInput" placeholder="https://example.com" class="url-input" />
-            <button class="btn-check" id="checkBtn">
-              <span id="checkBtnText">Check</span>
-              <div class="spinner hidden" id="spinner"></div>
-            </button>
+<!-- XP STREAK BAR -->
+<div class="streak-section">
+  <div class="wrap">
+    <div class="streak-inner">
+      <span class="streak-label">🔥 6 features active</span>
+      <div class="streak-track">
+        <div class="streak-seg done"></div>
+        <div class="streak-seg done"></div>
+        <div class="streak-seg done"></div>
+        <div class="streak-seg done"></div>
+        <div class="streak-seg done"></div>
+        <div class="streak-seg active"></div>
+        <div class="streak-seg"></div>
+      </div>
+      <span class="streak-stat">Score <span>85</span>/100</span>
+    </div>
+  </div>
+</div>
+
+<!-- FEATURES -->
+<section class="features-section" id="features">
+  <div class="wrap">
+    <div class="fi" style="max-width:520px;margin-bottom:0">
+      <div class="section-eyebrow">🔬 Six real features</div>
+      <h2 class="h2">Everything actually <span class="hl">in the extension</span></h2>
+      <p class="hsub">No puffed-up marketing. These are the six modules that run on every page you visit, documented straight from the source code.</p>
+    </div>
+    <div class="feat-grid">
+
+      <!-- 1 -->
+      <div class="feat-card fi">
+        <span class="feat-num">1</span>
+        <div class="feat-icon fi-green">🔒</div>
+        <div class="feat-title">Auto-HTTPS &amp; Mixed Content</div>
+        <p class="feat-desc">Redirects HTTP to HTTPS silently via declarativeNetRequest rules. Also scans every loaded page for mixed-content resources and reports them to the side panel.</p>
+        <span class="feat-chip chip-green">✓ Via rules.json + content.js</span>
+        <div class="feat-demo">
+          <div class="toggle-list">
+            <div class="toggle-item">
+              <div><div class="toggle-label">Auto-HTTPS Upgrade</div><div class="toggle-sub">Force secure connections</div></div>
+              <div class="toggle-sw on"></div>
+            </div>
+            <div class="toggle-item">
+              <div><div class="toggle-label">Mixed Content Scan</div><div class="toggle-sub">Detect HTTP on HTTPS pages</div></div>
+              <div class="toggle-sw on"></div>
+            </div>
           </div>
-          <div class="sc-result hidden" id="scResult">
-            <div id="resultStatus"></div>
-            <div id="resultDetails" class="result-details"></div>
+        </div>
+      </div>
+
+      <!-- 2 -->
+      <div class="feat-card fi d1">
+        <span class="feat-num">2</span>
+        <div class="feat-icon fi-yellow">🕵️</div>
+        <div class="feat-title">Tracker Detection</div>
+        <p class="feat-desc">Scans all scripts, images, iframes and stylesheets against the Disconnect.me blocklist — 70k+ domains, fetched live and cached for 24 hrs.</p>
+        <span class="feat-chip chip-yellow">Disconnect.me · ~70k domains</span>
+        <div class="feat-demo">
+          <div class="tracker-list">
+            <div class="tracker-item"><span class="tracker-dot" style="background:var(--red)"></span><span class="tracker-name">doubleclick.net</span><span class="tracker-tier tier-r">High Risk</span></div>
+            <div class="tracker-item"><span class="tracker-dot" style="background:var(--orange)"></span><span class="tracker-name">criteo.com</span><span class="tracker-tier tier-o">Ad Network</span></div>
+            <div class="tracker-item"><span class="tracker-dot" style="background:var(--yellow)"></span><span class="tracker-name">hotjar.com</span><span class="tracker-tier tier-y">Analytics</span></div>
           </div>
-          <p class="sc-note">Uses the same engine as the ClickSafe extension.</p>
+        </div>
+      </div>
+
+      <!-- 3 -->
+      <div class="feat-card fi d2">
+        <span class="feat-num">3</span>
+        <div class="feat-icon fi-blue">🔗</div>
+        <div class="feat-title">Link Hover Checker</div>
+        <p class="feat-desc">On every hovered link: checks your whitelist first, then a local SHA-256 hash prefix store. Only sends a hash to the backend if a prefix match needs full confirmation.</p>
+        <span class="feat-chip chip-blue">3-tier · privacy-first</span>
+        <div class="feat-demo">
+          <div class="toggle-list">
+            <div class="toggle-item"><div><div class="toggle-label">Tier 1 — Whitelist</div><div class="toggle-sub">Instant, no network call</div></div><div class="toggle-sw on"></div></div>
+            <div class="toggle-item"><div><div class="toggle-label">Tier 2 — Local Hash</div><div class="toggle-sub">SHA-256 prefix, local only</div></div><div class="toggle-sw on"></div></div>
+            <div class="toggle-item"><div><div class="toggle-label">Tier 3 — Backend Confirm</div><div class="toggle-sub">Only on prefix match</div></div><div class="toggle-sw on"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4 -->
+      <div class="feat-card fi">
+        <span class="feat-num">4</span>
+        <div class="feat-icon fi-red">📥</div>
+        <div class="feat-title">Download Scanner</div>
+        <p class="feat-desc">Every download is paused, checked against Google Safe Browsing via the backend, then resumed or cancelled. A warning modal is injected if a threat is detected.</p>
+        <span class="feat-chip chip-red">Pause → Check → Resume/Cancel</span>
+        <div class="feat-demo">
+          <div style="padding:14px;border-radius:var(--r-sm);background:var(--red-bg);border:3px solid var(--red);box-shadow:0 4px 0 var(--red-dk);">
+            <div style="font-size:13px;font-weight:900;color:var(--red-dk);margin-bottom:4px;">🚨 Dangerous Download Blocked!</div>
+            <div style="font-size:10px;color:var(--muted);font-weight:800;margin-bottom:10px;word-break:break-all;font-family:monospace;">installer.exe · Threat: MALWARE</div>
+            <div style="display:flex;gap:7px;">
+              <span style="padding:6px 14px;background:var(--red);color:white;border-radius:8px;font-size:12px;font-weight:900;border:2px solid var(--red-dk);box-shadow:0 3px 0 var(--red-dk);">Go Back</span>
+              <span style="padding:6px 14px;background:white;color:var(--muted);border-radius:8px;font-size:12px;font-weight:900;border:2px solid var(--border);box-shadow:0 3px 0 var(--border);">Proceed Anyway</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 5 -->
+      <div class="feat-card fi d1">
+        <span class="feat-num">5</span>
+        <div class="feat-icon fi-orange">⚠️</div>
+        <div class="feat-title">Dark Pattern Detector</div>
+        <p class="feat-desc">Scans page text and DOM for five categories of manipulative design: fake urgency, confirm-shaming, fake countdown timers, pre-ticked marketing checkboxes, and manipulative cookie banners.</p>
+        <span class="feat-chip chip-orange">5 pattern types detected</span>
+        <div class="feat-demo">
+          <div style="padding:10px 12px;border-radius:var(--r-xs);background:#FFF7F0;border:2px solid var(--orange);margin-bottom:7px;box-shadow:0 3px 0 var(--orange);">
+            <div style="font-size:10px;font-weight:900;color:var(--orange);text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px;">Fake Urgency</div>
+            <div style="font-size:12px;font-weight:700;color:#7C2D12;">"Only 2 left! Selling fast — act now!"</div>
+          </div>
+          <div style="padding:10px 12px;border-radius:var(--r-xs);background:#FDF4FF;border:2px solid var(--purple);box-shadow:0 3px 0 var(--purple-dk);">
+            <div style="font-size:10px;font-weight:900;color:var(--purple-dk);text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px;">Confirm Shaming</div>
+            <div style="font-size:12px;font-weight:700;color:#4a0072;">"No thanks, I hate saving money"</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 6 -->
+      <div class="feat-card fi d2">
+        <span class="feat-num">6</span>
+        <div class="feat-icon fi-purple">📡</div>
+        <div class="feat-title">Real-Time Privacy Banner</div>
+        <p class="feat-desc">When your privacy score drops below 50, a banner appears at the top of the page explaining the top reason with a dismiss button. Formula: 100 − 30(HTTP) − 5×cookies − 4×trackers − 5×mixed.</p>
+        <span class="feat-chip chip-purple">Score &lt; 50 triggers banner</span>
+        <div class="feat-demo">
+          <div style="padding:10px 14px;border-radius:var(--r-xs);background:#FFFBEB;border:2px solid var(--yellow);display:flex;align-items:center;gap:9px;margin-bottom:7px;box-shadow:0 3px 0 var(--yellow-dk);">
+            <span style="font-size:16px;">🛡️</span>
+            <div><span style="font-size:12px;font-weight:900;color:#D97706;">Moderate Risk &nbsp;</span><span style="font-size:12px;font-weight:700;color:#92400E;">Score <strong>42/100</strong> · 5 tracking cookies</span></div>
+          </div>
+          <div style="padding:10px 14px;border-radius:var(--r-xs);background:var(--red-bg);border:2px solid var(--red);display:flex;align-items:center;gap:9px;box-shadow:0 3px 0 var(--red-dk);">
+            <span style="font-size:16px;">🛡️</span>
+            <div><span style="font-size:12px;font-weight:900;color:var(--red-dk);">High Risk &nbsp;</span><span style="font-size:12px;font-weight:700;color:#7F1D1D;">Score <strong>28/100</strong> · Not encrypted (HTTP)</span></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="how-section" id="how">
+  <div class="wrap">
+    <div class="fi">
+      <div class="section-eyebrow blue-ey">🏗️ Privacy-first architecture</div>
+      <h2 class="h2">Link checking that keeps your <span class="hl-blue">URLs private</span></h2>
+      <p class="hsub">Naively sending every URL to a server leaks your entire browsing history. ClickSafe uses a three-tier approach to avoid this.</p>
+    </div>
+    <div class="how-grid">
+      <div class="fi d1">
+        <div class="tier-diagram">
+          <div class="tier-block">
+            <div class="tier-num tn-green">1</div>
+            <div class="tier-label">Tier 1 · Instant</div>
+            <div class="tier-title">Whitelist check</div>
+            <div class="tier-desc">If the domain is in your personal whitelist — safe, done. Nothing sent anywhere.</div>
+          </div>
+          <div class="tier-arrow">↓ no match</div>
+          <div class="tier-block">
+            <div class="tier-num tn-blue">2</div>
+            <div class="tier-label">Tier 2 · Private · Local only</div>
+            <div class="tier-title">Local hash prefix store</div>
+            <div class="tier-desc">The hovered URL is hashed (SHA-256) locally and checked against a 4-byte prefix store refreshed every 30 minutes. No match → safe, nothing leaves your browser.</div>
+          </div>
+          <div class="tier-arrow">↓ prefix match only</div>
+          <div class="tier-block">
+            <div class="tier-num tn-purple">3</div>
+            <div class="tier-label">Tier 3 · Only on prefix match</div>
+            <div class="tier-title">Backend hash confirmation</div>
+            <div class="tier-desc">Only the SHA-256 hash (not the URL) is sent to your backend, which calls Google Safe Browsing's <code>fullHashes:find</code> endpoint to confirm or deny the threat.</div>
+          </div>
+        </div>
+      </div>
+      <div class="how-points fi d2">
+        <div class="how-point">
+          <div class="how-point-icon">🏗️</div>
+          <div><div class="how-point-title">Self-hosted backend required</div><div class="how-point-desc">Link checking and download scanning both require a Node.js/Express backend running locally or on your own server. The backend holds your Google Safe Browsing API key.</div></div>
+        </div>
+        <div class="how-point">
+          <div class="how-point-icon">🍪</div>
+          <div><div class="how-point-title">Cookie scanning runs entirely locally</div><div class="how-point-desc">The background service worker calls <code>chrome.cookies.getAll()</code> and classifies each cookie by domain against a known-tracker list. Nothing is transmitted.</div></div>
+        </div>
+        <div class="how-point">
+          <div class="how-point-icon">📊</div>
+          <div><div class="how-point-title">Privacy score formula (honest)</div><div class="how-point-desc">Score = 100 − 30 (if HTTP) − 5×tracking-cookies (max 30) − 4×tracker-scripts (max 20) − 5×mixed-content (max 20). Minimum 0.</div></div>
+        </div>
+        <div class="how-point">
+          <div class="how-point-icon">🔄</div>
+          <div><div class="how-point-title">Tracker blocklist stays fresh</div><div class="how-point-desc">On startup the extension loads a bundled seed list, then fetches the full live Disconnect.me <code>services.json</code> (~70k domains) from GitHub and caches it for 24 hours.</div></div>
         </div>
       </div>
     </div>
-  </section>
+  </div>
+</section>
 
-  <section class="how-it-works" id="how-it-works">
-    <div class="container">
-      <div class="section-header-center">
-        <div class="section-label-text">How it Works</div>
-        <h2>Up and running in 30 seconds</h2>
-        <p>Three simple steps to browse safely forever.</p>
+<!-- PRIVACY -->
+<section class="privacy-section">
+  <div class="wrap">
+    <div class="privacy-inner">
+      <div class="privacy-text fi">
+        <div class="section-eyebrow" style="background:rgba(255,255,255,.2);color:white;border-color:rgba(255,255,255,.4);">🔐 What "privacy-first" actually means</div>
+        <h2 class="h2">Most analysis stays <span class="hl">on your device</span></h2>
+        <p class="hsub">HTTPS detection, tracker scanning, cookie analysis, mixed-content scanning, and dark pattern detection all run locally. Only link hover checking and download scanning touch a backend.</p>
+        <div class="privacy-list">
+          <div class="privacy-item"><div class="privacy-check">✓</div><div class="privacy-item-text"><strong>All cookie &amp; tracker scanning is local.</strong> Runs inside the extension's background service worker. No data leaves your browser.</div></div>
+          <div class="privacy-item"><div class="privacy-check">✓</div><div class="privacy-item-text"><strong>Dark pattern detection is local.</strong> Pure DOM/regex analysis; no page content is transmitted anywhere.</div></div>
+          <div class="privacy-item"><div class="privacy-check">✓</div><div class="privacy-item-text"><strong>Link checking sends only a hash prefix first.</strong> Raw URLs reach the backend only when a local prefix match needs confirming.</div></div>
+          <div class="privacy-item"><div class="privacy-check" style="background:var(--yellow);border-color:var(--yellow-dk);box-shadow:0 3px 0 var(--yellow-dk);">!</div><div class="privacy-item-text"><strong>Download URLs do reach your backend.</strong> This is disclosed clearly — the backend needs to call Safe Browsing to verify a file's origin URL.</div></div>
+          <div class="privacy-item"><div class="privacy-check">✓</div><div class="privacy-item-text"><strong>You host the backend yourself.</strong> No third-party telemetry. Your Safe Browsing API key stays in your own <code>.env</code> file.</div></div>
+        </div>
       </div>
-      <div class="steps-grid">
-        <div class="step-card">
-          <div class="step-number">01</div>
-          <h3>Install the Extension</h3>
-          <p>Click "Add to Chrome" — it's completely free. Works instantly with no account required.</p>
-        </div>
-        <div class="step-arrow">→</div>
-        <div class="step-card">
-          <div class="step-number">02</div>
-          <h3>Browse Normally</h3>
-          <p>ClickSafe works silently in the background, scanning every page you visit in real-time.</p>
-        </div>
-        <div class="step-arrow">→</div>
-        <div class="step-card">
-          <div class="step-number">03</div>
-          <h3>Stay Protected</h3>
-          <p>Get instant alerts for dangerous sites, blocked trackers, and full cookie transparency.</p>
+      <div class="fi d1">
+        <div class="privacy-card">
+          <div class="privacy-card-label">📊 Privacy score breakdown · example page</div>
+          <div class="score-bar-list">
+            <div class="sbar-row"><span class="sbar-label">Start</span><div class="sbar-track"><div class="sbar-fill" data-w="100" style="width:0;background:var(--border);"></div></div><span class="sbar-val" style="color:var(--muted)">100</span></div>
+            <div class="sbar-row"><span class="sbar-label">HTTPS ✓</span><div class="sbar-track"><div class="sbar-fill" data-w="100" style="width:0;background:var(--green);"></div></div><span class="sbar-val" style="color:var(--green-dk)">−0</span></div>
+            <div class="sbar-row"><span class="sbar-label">3 cookies</span><div class="sbar-track"><div class="sbar-fill" data-w="85" style="width:0;background:var(--orange);"></div></div><span class="sbar-val" style="color:var(--orange)">−15</span></div>
+            <div class="sbar-row"><span class="sbar-label">0 trackers</span><div class="sbar-track"><div class="sbar-fill" data-w="85" style="width:0;background:var(--green);"></div></div><span class="sbar-val" style="color:var(--green-dk)">−0</span></div>
+            <div class="sbar-row"><span class="sbar-label">0 mixed</span><div class="sbar-track"><div class="sbar-fill" data-w="85" style="width:0;background:var(--green);"></div></div><span class="sbar-val" style="color:var(--green-dk)">−0</span></div>
+            <div class="sbar-row"><span class="sbar-label" style="font-weight:900;color:var(--text-dk)">Final score</span><div class="sbar-track"><div class="sbar-fill" data-w="85" style="width:0;background:var(--purple);"></div></div><span class="sbar-val" style="color:var(--purple-dk);font-weight:900">85</span></div>
+          </div>
+          <div class="formula-box">
+            <div class="formula-title">Scoring formula (from background.js)</div>
+            <div class="formula-code">
+              score = 100<br/>
+              if (!isHttps) score <span class="hl-p">−= 30</span><br/>
+              score <span class="hl-p">−= min(cookies × 5, 30)</span><br/>
+              score <span class="hl-p">−= min(trackers × 4, 20)</span><br/>
+              score <span class="hl-p">−= min(mixed × 5, 20)</span><br/>
+              return <span class="hl-g">clamp(score, 0, 100)</span>
+            </div>
+          </div>
         </div>
       </div>
     </div>
-  </section>
+  </div>
+</section>
 
-  <section class="future-features">
-    <div class="container">
-      <div class="section-header-center">
-        <div class="section-label-text">Future Features</div>
-        <h2>More Security Coming Soon</h2>
-        <p>More security tools, including VPN and safe link sharing, coming soon!</p>
+<!-- BROWSERS -->
+<section class="browsers-section" id="browsers">
+  <div class="wrap">
+    <div class="browsers-inner">
+      <div class="browsers-left fi">
+        <div class="section-eyebrow green-ey">🌐 Compatibility</div>
+        <h2 class="h2">Works on all <span class="hl-green">Chromium</span> browsers</h2>
+        <p class="hsub" style="margin-top:10px;">Built on Manifest V3, it runs on any Chromium-based browser. Firefox is not currently supported.</p>
+        <div class="browsers-logos">
+          <div class="browser-logo" title="Chrome">🌐</div>
+          <div class="browser-logo" title="Brave">🦁</div>
+          <div class="browser-logo" title="Edge">🔷</div>
+          <div class="browser-logo" title="Opera">🔴</div>
+          <div class="browser-logo" title="Vivaldi">🎻</div>
+          <div class="browser-logo" title="Arc">🌈</div>
+        </div>
+        <p style="font-size:12px;color:var(--muted);margin-top:14px;font-weight:800;">Firefox support planned. Safari is not supported.</p>
       </div>
-      <div class="future-grid">
-        <div class="future-card">
-          <div class="future-icon">🔐</div>
-          <h3>Built-in VPN</h3>
-          <p>Encrypt your traffic and hide your IP while browsing the web.</p>
-          <span class="coming-soon-badge">Coming Soon</span>
+      <div class="browsers-right fi d1">
+        <div class="browsers-stat"><div class="browsers-stat-n">6</div><div class="browsers-stat-l">Security features</div></div>
+        <div class="browsers-stat"><div class="browsers-stat-n">70k+</div><div class="browsers-stat-l">Tracker domains</div></div>
+        <div class="browsers-stat"><div class="browsers-stat-n">v1.3</div><div class="browsers-stat-l">Current version</div></div>
+        <div class="browsers-stat"><div class="browsers-stat-n">MIT</div><div class="browsers-stat-l">Open source license</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- INSTALL -->
+<section class="install-section" id="install">
+  <div class="wrap install-inner">
+    <div class="section-intro fi">
+      <div class="section-eyebrow" style="background:rgba(255,255,255,.2);color:white;border-color:rgba(255,255,255,.4);">🚀 Installation</div>
+      <h2 class="h2">Get started in <span class="hl">three steps</span></h2>
+      <p class="hsub">Requires Chrome, Brave, Edge, or any Chromium browser, plus Node.js for the backend.</p>
+    </div>
+    <div class="install-steps fi d1">
+      <div class="install-step">
+        <div class="install-step-n">1</div>
+        <div class="install-step-title">Clone the repository</div>
+        <div class="install-step-desc">Download or clone the project from GitHub. You'll need the <code>frontend/</code> folder for the extension and <code>backend/</code> for the Node.js server.</div>
+        <div class="install-code">git clone https://github.com/&lt;your-repo&gt;/clicksafe</div>
+      </div>
+      <div class="install-step">
+        <div class="install-step-n" style="background:var(--purple);border-color:var(--purple-dk);box-shadow:0 4px 0 var(--purple-dk);">2</div>
+        <div class="install-step-title">Start the backend</div>
+        <div class="install-step-desc">Add your Google Safe Browsing API key to <code>backend/.env</code> and start the server. It runs on port 3000 by default.</div>
+        <div class="install-code">cd backend && npm install && npm start</div>
+      </div>
+      <div class="install-step">
+        <div class="install-step-n" style="background:var(--green);border-color:var(--green-dk);box-shadow:0 4px 0 var(--green-dk);">3</div>
+        <div class="install-step-title">Load as unpacked extension</div>
+        <div class="install-step-desc">Go to <code>chrome://extensions</code>, enable Developer Mode, click "Load unpacked" and select the <code>frontend/</code> directory.</div>
+        <div class="install-code">chrome://extensions → Load unpacked → /frontend</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="faq-section" id="faq">
+  <div class="wrap">
+    <div class="faq-inner">
+      <div class="fi">
+        <div class="section-eyebrow">❓ FAQ</div>
+        <h2 class="h2">Honest answers to <span class="hl">real questions</span></h2>
+        <p class="hsub" style="margin-top:10px;">No marketing language. Straight answers about what the extension does and doesn't do.</p>
+        <div style="margin-top:28px;display:flex;gap:10px;flex-wrap:wrap;">
+          <a href="#" class="btn btn-green">View on GitHub</a>
+          <a href="#" class="btn btn-ghost">Read the Code</a>
         </div>
-        <div class="future-card">
-          <div class="future-icon">🔗</div>
-          <h3>Safe Link Sharing</h3>
-          <p>Share links with safety scores so your friends know what they're clicking.</p>
-          <span class="coming-soon-badge">Coming Soon</span>
+      </div>
+      <div class="faq-list fi d1">
+        <div class="faq-item">
+          <button class="faq-q" onclick="toggleFaq(this)">Does ClickSafe collect any of my data? <span class="faq-arr">▾</span></button>
+          <div class="faq-a"><div class="faq-a-inner">Most analysis — cookies, trackers, HTTPS, mixed content, dark patterns — runs entirely locally and nothing is transmitted. Download URLs are sent to your own self-hosted backend. Link hover checking uses local hash prefixes first; only the SHA-256 hash reaches the backend on a positive match.</div></div>
         </div>
-        <div class="future-card">
-          <div class="future-icon">📊</div>
-          <h3>Privacy Dashboard</h3>
-          <p>Full analytics on your browsing patterns and trackers blocked over time.</p>
-          <span class="coming-soon-badge">Coming Soon</span>
+        <div class="faq-item">
+          <button class="faq-q" onclick="toggleFaq(this)">Do I really need a backend server? <span class="faq-arr">▾</span></button>
+          <div class="faq-a"><div class="faq-a-inner">Yes, for two features. Link hover checking and download scanning both call <code>localhost:3000</code> (configurable). The extension gracefully handles the backend being unavailable — it resumes downloads and marks links as safe if the server is down.</div></div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-q" onclick="toggleFaq(this)">What browsers are supported? <span class="faq-arr">▾</span></button>
+          <div class="faq-a"><div class="faq-a-inner">Any Chromium-based browser: Chrome (v88+), Brave, Edge, Opera, Vivaldi, Arc, and similar. Firefox uses a different extension API and is not currently supported.</div></div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-q" onclick="toggleFaq(this)">How does the tracker blocklist stay up to date? <span class="faq-arr">▾</span></button>
+          <div class="faq-a"><div class="faq-a-inner">On startup the extension loads a bundled seed list (~178 priority trackers). It then fetches the live Disconnect.me <code>services.json</code> from GitHub and merges it (total ~70k domains). The live list is cached in <code>chrome.storage</code> for 24 hours.</div></div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-q" onclick="toggleFaq(this)">What exactly does the dark pattern detector catch? <span class="faq-arr">▾</span></button>
+          <div class="faq-a"><div class="faq-a-inner">Five categories: fake urgency, confirm-shaming, fake countdown timers, pre-ticked checkboxes for marketing, and cookie banner manipulation (an "Accept All" button with no visible "Reject" option).</div></div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-q" onclick="toggleFaq(this)">Will this extension slow down my browser? <span class="faq-arr">▾</span></button>
+          <div class="faq-a"><div class="faq-a-inner">The most expensive operation is the tracker scan, which runs <code>Promise.all()</code> across every script, image, and iframe on a page. On pages with many third-party resources this can add a few hundred milliseconds. Link checking is debounced to 300ms.</div></div>
         </div>
       </div>
     </div>
-  </section>
+  </div>
+</section>
 
-  <section class="cta-banner">
-    <div class="container">
-      <div class="cta-content">
-        <span class="cta-star">✦</span>
-        <h2>Get Peace of Mind. Install ClickSafe Today.</h2>
-        <a href="#" class="btn-primary btn-large btn-white">
-          <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 1.5L3 5v6c0 4.1 3.2 8 7 9 3.8-1 7-4.9 7-9V5L10 1.5z" fill="#1a7a4a" opacity="0.9"/><path d="M7 10l2.5 2.5 3.5-4" stroke="#1a7a4a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          Add to Chrome — It's Free
-        </a>
+<!-- CTA -->
+<section class="cta-section">
+  <div class="wrap">
+    <div class="cta-inner fi">
+      <div class="section-eyebrow" style="background:rgba(255,255,255,.2);color:white;border-color:rgba(255,255,255,.4);justify-content:center;display:inline-flex;margin-bottom:20px;">🆓 Open source · free forever</div>
+      <h2 class="cta-h">Browse with <span class="hl">actual</span><br/>awareness.</h2>
+      <p class="cta-sub">Six security features, self-hosted, zero telemetry. Know exactly what every website is doing to your browser — in real time.</p>
+      <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+        <a href="#install" class="btn btn-ghost btn-lg" style="background:white;color:var(--green-dk);border-color:var(--green-dk);box-shadow:0 6px 0 var(--green-dk);">🛡️ Install ClickSafe</a>
+        <a href="https://github.com" class="btn btn-lg" style="background:rgba(255,255,255,.2);color:white;border-color:rgba(255,255,255,.4);box-shadow:0 6px 0 rgba(0,0,0,.1);">View on GitHub</a>
       </div>
+      <p class="cta-meta">MIT License · Chromium only · Requires self-hosted Node.js backend · v1.3.0</p>
     </div>
-  </section>
+  </div>
+</section>
 
-  <footer class="footer">
-    <div class="container">
-      <div class="footer-top">
+<!-- FOOTER -->
+<footer>
+  <div class="wrap">
+    <div class="footer-top">
+      <div>
         <div class="footer-brand">
-          <div class="nav-logo">
-            <div class="logo-icon">
-              <svg width="24" height="24" viewBox="0 0 28 28" fill="none"><path d="M14 2L4 7v8c0 5.5 4.3 10.7 10 12 5.7-1.3 10-6.5 10-12V7L14 2z" fill="#1a7a4a" opacity="0.2"/><path d="M14 2L4 7v8c0 5.5 4.3 10.7 10 12 5.7-1.3 10-6.5 10-12V7L14 2z" stroke="#1a7a4a" stroke-width="1.5" fill="none"/><path d="M10 14l3 3 5-5" stroke="#1a7a4a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            </div>
-            <span class="logo-text">ClickSafe</span>
-          </div>
-          <p>Browse boldly, click safely. Real-time protection for the modern web.</p>
+          <div class="footer-brand-mark">🛡️</div>
+          <span class="footer-brand-text">ClickSafe</span>
+          <span class="version-chip">v1.3.0</span>
         </div>
-        <div class="footer-links">
-          <div class="footer-col">
-            <h4>Product</h4>
-            <a href="#features">Features</a>
-            <a href="#safety-check">Safety Check</a>
-            <a href="#how-it-works">How it Works</a>
-          </div>
-          <div class="footer-col">
-            <h4>Legal</h4>
-            <a href="#">Privacy Policy</a>
-            <a href="#">Terms of Service</a>
-          </div>
+        <p class="footer-desc">An open-source Chromium browser extension with six real-time security features. Self-hosted. No telemetry. MIT licensed.</p>
+        <div class="footer-chips">
+          <span class="footer-chip">Chromium MV3</span>
+          <span class="footer-chip">MIT License</span>
+          <span class="footer-chip">Node.js Backend</span>
         </div>
       </div>
-      <div class="footer-bottom">
-        <p>© 2025 ClickSafe. All rights reserved.</p>
+      <div>
+        <div class="footer-col-title">Features</div>
+        <ul class="footer-links">
+          <li><a href="#features">Auto-HTTPS</a></li>
+          <li><a href="#features">Tracker Detection</a></li>
+          <li><a href="#features">Link Safety</a></li>
+          <li><a href="#features">Download Scanner</a></li>
+          <li><a href="#features">Dark Patterns</a></li>
+          <li><a href="#features">Privacy Banner</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-col-title">Docs</div>
+        <ul class="footer-links">
+          <li><a href="#install">Installation</a></li>
+          <li><a href="#how">How it Works</a></li>
+          <li><a href="#faq">FAQ</a></li>
+          <li><a href="#">Backend Setup</a></li>
+          <li><a href="#">Changelog</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-col-title">Project</div>
+        <ul class="footer-links">
+          <li><a href="#">GitHub</a></li>
+          <li><a href="#">Privacy Policy</a></li>
+          <li><a href="#">License (MIT)</a></li>
+          <li><a href="#">Report a Bug</a></li>
+        </ul>
       </div>
     </div>
-  </footer>
+    <div class="footer-bottom">
+      <span>© 2026 ClickSafe. Open-source, self-hosted.</span>
+      <span>Chromium only · Not on the Chrome Web Store</span>
+    </div>
+  </div>
+</footer>
 
-  <script src="script.js"></script>
+<script>
+// Fade in
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('in'); });
+}, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
+document.querySelectorAll('.fi').forEach(el => obs.observe(el));
+
+// Score bars
+const barObs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if(e.isIntersecting){
+      e.target.querySelectorAll('.sbar-fill').forEach(b => {
+        setTimeout(() => { b.style.width = b.dataset.w + '%'; }, 200);
+      });
+      barObs.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.3 });
+document.querySelectorAll('.privacy-card').forEach(c => barObs.observe(c));
+
+// FAQ
+function toggleFaq(btn) {
+  const item = btn.parentElement;
+  const ans = btn.nextElementSibling;
+  const wasOpen = item.classList.contains('open');
+  document.querySelectorAll('.faq-item.open').forEach(i => {
+    i.classList.remove('open');
+    i.querySelector('.faq-a').classList.remove('open');
+  });
+  if(!wasOpen){ item.classList.add('open'); ans.classList.add('open'); }
+}
+
+// Button press sound effect (visual only)
+document.querySelectorAll('.btn').forEach(b => {
+  b.addEventListener('mousedown', () => b.style.transition = 'transform .05s, box-shadow .05s');
+  b.addEventListener('mouseup', () => b.style.transition = '');
+});
+</script>
 </body>
 </html>
