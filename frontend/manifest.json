@@ -70,7 +70,8 @@
         "assets/logo/48.png",
         "assets/logo/128.png",
         "assets/logo/16-red.png",
-        "pages/dashboard/dashboard.html"
+        "pages/dashboard/dashboard.html",
+        "assets/js/chart.umd.min.js"
       ],
       "matches": [
         "<all_urls>"

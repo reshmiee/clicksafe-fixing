@@ -28,8 +28,15 @@ function loadAll() {
     renderTopDomains(data);
     renderFeatureStatus(data);
     renderDarkPatternLog(data);
+    // summary panel cards
+    setText('sum-cookies',  data.totalCookieTrackersFound || 0);
+    setText('sum-trackers', data.totalTrackersFound       || 0);
+    setText('sum-dp',       data.totalDarkPatterns        || 0);
+    setText('sum-mixed',    data.totalMixedContent        || 0);
+    setText('sum-https',    data.totalHttpsRedirects      || 0);
+    setText('sum-links',    data.totalLinksChecked        || 0);
     document.getElementById('last-updated').textContent =
-      'Updated ' + new Date().toLocaleTimeString();
+      'Updated ' + new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
   });
 }
 
@@ -109,95 +116,59 @@ function renderGauge(score) {
 
 
 // ── FEATURE 16: 7-Day Heatmap ────────────────────────────────
+// Uses hm-labels + heatmap-grid DOM structure (matches current HTML layout)
 function renderHeatmap(data) {
-  const grid = document.getElementById('heatmap-grid');
-  grid.innerHTML = '';
+  const labelsEl = document.getElementById('hm-labels');
+  const gridEl   = document.getElementById('heatmap-grid');
+  if (!labelsEl || !gridEl) return;
 
-  // Build day buckets for last 7 days
-  const days = [];
-  const dayLabels = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  const dayNames = ['Su','Mo','Tu','We','Th','Fr','Sa'];
   const now = new Date();
+  const days = [];
 
   for (let i = 6; i >= 0; i--) {
     const d = new Date(now);
     d.setDate(d.getDate() - i);
-    days.push({
-      date: d,
-      label: dayLabels[d.getDay()],
-      dateStr: d.toDateString(),
-      count: 0
-    });
+    days.push({ date: d, label: dayNames[d.getDay()], dateStr: d.toDateString(), count: 0 });
   }
 
-  // Set day labels
-  days.forEach((d, i) => {
-    const el = document.getElementById(`hm-d${i}`);
-    if (el) el.textContent = d.label;
-  });
-
-  // Count threats per day from logs
   const logs = [
-    ...(data.trackerLog      || []),
-    ...(data.darkPatternLog  || []),
+    ...(data.trackerLog     || []),
+    ...(data.darkPatternLog || []),
   ];
-
   logs.forEach(entry => {
     const ts = entry.timestamp || entry.data?.timestamp;
     if (!ts) return;
-    const entryDate = new Date(ts).toDateString();
-    const day = days.find(d => d.dateStr === entryDate);
-    if (day) {
-      day.count += (entry.trackers?.length || entry.patterns?.length || entry.count || 1);
-    }
+    const day = days.find(d => d.dateStr === new Date(ts).toDateString());
+    if (day) day.count += (entry.trackers?.length || entry.patterns?.length || entry.count || 1);
   });
-
-  // Also count from mixedContent
-  if (data.mixedContentLog) {
-    data.mixedContentLog.forEach(entry => {
-      const entryDate = new Date(entry.timestamp).toDateString();
-      const day = days.find(d => d.dateStr === entryDate);
-      if (day) day.count += (entry.resources?.length || 1);
-    });
-  }
-
-  // FIX F16: also count cookie tracker events (previously missing from heatmap)
-  if (data.cookieTrackerLog) {
-    data.cookieTrackerLog.forEach(entry => {
-      const entryDate = new Date(entry.timestamp).toDateString();
-      const day = days.find(d => d.dateStr === entryDate);
-      if (day) day.count += (entry.count || 1);
-    });
-  }
+  (data.mixedContentLog || []).forEach(entry => {
+    const day = days.find(d => d.dateStr === new Date(entry.timestamp).toDateString());
+    if (day) day.count += (entry.resources?.length || 1);
+  });
+  (data.cookieTrackerLog || []).forEach(entry => {
+    const day = days.find(d => d.dateStr === new Date(entry.timestamp).toDateString());
+    if (day) day.count += (entry.count || 1);
+  });
 
   const max = Math.max(...days.map(d => d.count), 1);
 
+  labelsEl.innerHTML = days.map(d => `<span class="hm-lbl">${d.label}</span>`).join('');
+  gridEl.innerHTML = '';
   days.forEach(day => {
     const cell = document.createElement('div');
     cell.className = 'heatmap-cell';
-
-    const intensity = day.count / max;
-    if (day.count === 0) {
-      cell.style.background = '#f3f4f6';
-      cell.style.border = '1px solid #e5e7eb';
-    } else if (intensity < 0.25) {
-      cell.style.background = 'rgba(239,68,68,0.2)';
-    } else if (intensity < 0.5) {
-      cell.style.background = 'rgba(239,68,68,0.45)';
-    } else if (intensity < 0.75) {
-      cell.style.background = 'rgba(239,68,68,0.7)';
-    } else {
-      cell.style.background = 'rgba(239,68,68,1)';
-    }
-
+    const a = day.count / max;
+    cell.style.background = day.count === 0
+      ? 'var(--border)'
+      : `rgba(255,75,75,${(0.15 + a * 0.85).toFixed(2)})`;
     const tip = document.createElement('div');
     tip.className = 'tooltip';
-    tip.textContent = `${day.label} — ${day.count} threat${day.count !== 1 ? 's' : ''}`;
+    tip.textContent = `${day.label} \u00b7 ${day.count} event${day.count !== 1 ? 's' : ''}`;
     cell.appendChild(tip);
-    grid.appendChild(cell);
+    gridEl.appendChild(cell);
   });
 }
-
-
 // ── FEATURE 17: Threat Breakdown Donut ───────────────────────
 function renderDonut(data) {
   const cookieTrackers = data.totalCookieTrackersFound || 0;

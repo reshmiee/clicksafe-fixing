@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>ClickSafe — Dashboard</title>
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet"/>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <script src="../../assets/js/chart.umd.min.js"></script>
   <style>
     :root {
       --green:       #58CC02;
@@ -446,78 +446,6 @@
   </div>
 </div>
 
-<script>
-// ── patch heatmap render to use new DOM structure ──
-// original dashboard.js sets hm-d0..hm-d6 IDs but new HTML uses hm-labels + hm-row
-// We'll override renderHeatmap after loading dashboard.js
-</script>
 <script src="dashboard.js"></script>
-<script>
-// ── wire up summary cards (new IDs in this HTML) ──
-const _origLoadAll = loadAll;
-function loadAll() {
-  chrome.storage.local.get(null, data => {
-    renderOverview(data);
-    renderHeatmapNew(data);
-    renderDonut(data);
-    renderTimeline(data);
-    renderTopDomains(data);
-    renderFeatureStatus(data);
-    renderDarkPatternLog(data);
-    // summary panel
-    setText('sum-cookies',  data.totalCookieTrackersFound || 0);
-    setText('sum-trackers', data.totalTrackersFound       || 0);
-    setText('sum-dp',       data.totalDarkPatterns        || 0);
-    setText('sum-mixed',    data.totalMixedContent        || 0);
-    setText('sum-https',    data.totalHttpsRedirects      || 0);
-    setText('sum-links',    data.totalLinksChecked        || 0);
-    document.getElementById('last-updated').textContent =
-      'Updated ' + new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
-  });
-}
-
-function renderHeatmapNew(data) {
-  const labelsEl = document.getElementById('hm-labels');
-  const gridEl   = document.getElementById('heatmap-grid');
-  const dayNames = ['Su','Mo','Tu','We','Th','Fr','Sa'];
-  const now = new Date();
-  const days = [];
-  for (let i=6; i>=0; i--) {
-    const d = new Date(now); d.setDate(d.getDate()-i);
-    days.push({ date:d, label:dayNames[d.getDay()], dateStr:d.toDateString(), count:0 });
-  }
-  const logs = [...(data.trackerLog||[]),...(data.darkPatternLog||[])];
-  logs.forEach(entry => {
-    const ts = entry.timestamp || entry.data?.timestamp;
-    if (!ts) return;
-    const day = days.find(d=>d.dateStr===new Date(ts).toDateString());
-    if (day) day.count += (entry.trackers?.length || entry.patterns?.length || entry.count || 1);
-  });
-  (data.mixedContentLog||[]).forEach(entry => {
-    const day = days.find(d=>d.dateStr===new Date(entry.timestamp).toDateString());
-    if (day) day.count += (entry.resources?.length||1);
-  });
-  const mx = Math.max(...days.map(d=>d.count),1);
-  labelsEl.innerHTML = days.map(d=>`<span class="hm-lbl">${d.label}</span>`).join('');
-  gridEl.innerHTML = '';
-  days.forEach(day => {
-    const cell = document.createElement('div');
-    cell.className = 'heatmap-cell';
-    const a = day.count/mx;
-    cell.style.background = day.count===0 ? 'var(--border)' : `rgba(255,75,75,${0.15+a*0.85})`;
-    const tip = document.createElement('div');
-    tip.className = 'tooltip';
-    tip.textContent = `${day.label} · ${day.count} event${day.count!==1?'s':''}`;
-    cell.appendChild(tip);
-    gridEl.appendChild(cell);
-  });
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-  loadAll();
-  initFilterButtons();
-  document.getElementById('btn-clear').addEventListener('click', clearAllData);
-});
-</script>
 </body>
 </html>
